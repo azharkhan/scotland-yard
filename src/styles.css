@@ -15,6 +15,16 @@ body {
   stroke-width: 3;
 }
 
+.station {
+  stroke: black;
+}
+
+.station:hover {
+  cursor: pointer;
+  stroke: red;
+  stroke-width: 2;
+}
+
 .available {
   stroke-width: 3;
 }
@@ -34,17 +44,6 @@ body {
 .river {
   stroke: black;
 }
-
-circle {
-  stroke: black;
-}
-
-circle:hover {
-  cursor: pointer;
-  stroke: red;
-  stroke-width: 2;
-}
-
 .game-board {
   background-image: url("/assets/map_large.png");
   background-size: cover;

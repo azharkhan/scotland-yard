@@ -2,8 +2,18 @@ import stationData from "../assets/stations.json";
 
 const SVG_NS = "http://www.w3.org/2000/svg";
 
+// save reference to the board to add markers
 const svg = document.getElementById("board");
-const circles = document.querySelectorAll("circle");
+
+// find all stations
+const stations = document.querySelectorAll(".station");
+
+stations.forEach((station) => {
+  // attach click target
+  station.addEventListener("click", (event) => {
+    handleClick(event.target);
+  });
+});
 
 function removeClassFromAllObjects(className) {
   document.querySelectorAll(`.${className}`).forEach((match) => {
@@ -51,9 +61,3 @@ function handleClick(target) {
   placeNewCirle(target);
   selectNearbyStations(currentLocation);
 }
-
-circles.forEach((circle) => {
-  circle.addEventListener("click", (event) => {
-    handleClick(event.target);
-  });
-});
