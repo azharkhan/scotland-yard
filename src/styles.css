@@ -1,0 +1,51 @@
+html,
+body {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+#game {
+  padding: 10px;
+}
+
+.selected {
+  stroke: magenta;
+  fill: none;
+  stroke-width: 3;
+}
+
+.available {
+  stroke-width: 3;
+}
+
+.taxi {
+  stroke: yellow;
+}
+
+.underground {
+  stroke: crimson;
+}
+
+.bus {
+  stroke: turquoise;
+}
+
+.river {
+  stroke: black;
+}
+
+circle {
+  stroke: black;
+}
+
+circle:hover {
+  cursor: pointer;
+  stroke: red;
+  stroke-width: 2;
+}
+
+.game-board {
+  background-image: url("/assets/map_large.png");
+  background-size: cover;
+}
