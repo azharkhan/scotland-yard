@@ -17,6 +17,12 @@ You'll need the latest node.js version installed. Either use the [official insta
 1. Run `npm run dev` to start up a local server
 1. Navigate to the server address as shown in any modern browser.
 
+# Tools
+
+This repo is locally developed and bundled using the awesome [parcel](https://parceljs.org) bundler in order to simplify tooling.
+
+The design and plotting of all the points was completed on [Figma](https://www.figma.com).
+
 # Inspirations
 
 We're always standing on the shoulder of others who did this work before us, so I'm thankful for the following efforts, from where I picked up some assets.
