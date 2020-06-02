@@ -1,4 +1,28 @@
+import * as firebase from "firebase/app";
+import "firebase/firestore";
+
 import stationData from "../assets/stations.json";
+
+// setup firebase
+const firebaseConfig = {
+  apiKey: "AIzaSyBhxGWUq61BPjBLX9OORxH8PlZqir5lsO4",
+  authDomain: "scotland-yard-495ce.firebaseapp.com",
+  databaseURL: "https://scotland-yard-495ce.firebaseio.com",
+  projectId: "scotland-yard-495ce",
+  storageBucket: "scotland-yard-495ce.appspot.com",
+  messagingSenderId: "1000051458561",
+  appId: "1:1000051458561:web:61dc3f10fe539e88c6f600",
+  measurementId: "G-03ZWL7YNYQ",
+  authDomain: "scotland-yard-495ce.firebaseapp.com",
+  databaseURL: "https://scotland-yard-495ce.firebaseio.com",
+  projectId: "scotland-yard-495ce",
+  storageBucket: "scotland-yard-495ce.appspot.com",
+  messagingSenderId: "1000051458561",
+  appId: "1:1000051458561:web:61dc3f10fe539e88c6f600",
+  measurementId: "G-03ZWL7YNYQ",
+};
+
+firebase.initializeApp(firebaseConfig);
 
 const SVG_NS = "http://www.w3.org/2000/svg";
 
@@ -38,7 +62,7 @@ function selectNearbyStations(currentLocation) {
   }
 }
 
-function placeNewCirle(target) {
+function placeNewCircle(target) {
   // delete current location first
   const currentLocation = document.querySelector(".selected");
   if (currentLocation) {
@@ -51,13 +75,80 @@ function placeNewCirle(target) {
   circle.setAttributeNS(null, "cy", cy);
   circle.setAttributeNS(null, "r", 15);
   circle.setAttribute("class", "selected");
+  circle.setAttribute("data-point", target.dataset.point);
   svg.appendChild(circle);
 }
 
 function handleClick(target) {
-  const result = document.getElementById("result");
   const currentLocation = target.dataset.point;
-  result.innerHTML = `Current Position: ${currentLocation}`;
-  placeNewCirle(target);
+  placeNewCircle(target);
   selectNearbyStations(currentLocation);
 }
+
+function plotDetectivePosition(location, detective) {
+  const point = document.querySelector(`[data-point="${location.toString()}"]`);
+  const circle = document.createElementNS(SVG_NS, "circle");
+  const cx = point.getAttributeNS(null, "cx");
+  const cy = point.getAttributeNS(null, "cy");
+  circle.setAttributeNS(null, "cx", cx);
+  circle.setAttributeNS(null, "cy", cy);
+  circle.setAttributeNS(null, "r", 15);
+  circle.setAttribute("class", `detective ${detective}`);
+  svg.appendChild(circle);
+
+  // update location
+  const locationContainer = document.querySelector(
+    `.${detective} > .info > .location`
+  );
+  locationContainer.innerHTML = location.toString();
+}
+
+const db = firebase.firestore();
+
+const currentGameRef = db.collection("games").doc("tcZwNAgeeZuJBzNl48l1");
+
+currentGameRef.get().then((doc) => {
+  if (doc.exists) {
+    const { positions } = doc.data();
+    for (const detectivePosition in positions) {
+      let location = positions[detectivePosition];
+      plotDetectivePosition(location, detectivePosition);
+    }
+  } else {
+    console.log("nothing found, sadly it's all gone to poop");
+  }
+});
+
+function saveDetectiveLocation(detective, location) {
+  currentGameRef
+    .set(
+      {
+        positions: {
+          [`${detective}`]: location,
+        },
+      },
+      { merge: true }
+    )
+    .then(() => {
+      const currentLocation = document.querySelector(".selected");
+      if (currentLocation) {
+        svg.removeChild(currentLocation);
+      }
+      plotDetectivePosition(location, detective);
+    });
+}
+
+document.querySelectorAll(".set-location").forEach((button) => {
+  button.addEventListener("click", (event) => {
+    // get detective reference from class list
+    const detective = Array.from(
+      event.target.parentElement.parentElement.classList
+    ).pop();
+
+    const selectedElement = document.querySelector(".selected");
+    if (selectedElement) {
+      const location = selectedElement.dataset.point;
+      saveDetectiveLocation(detective, location);
+    }
+  });
+});

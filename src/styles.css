@@ -7,12 +7,62 @@ body {
 
 #game {
   padding: 10px;
+  display: grid;
+  grid-template-columns: 4fr 1fr;
+  height: 100vh;
+}
+
+.players {
+  display: grid;
+}
+
+.player {
+  border: 1px #ececec solid;
+}
+
+.detective {
+  stroke: magenta;
+  fill: none;
+  stroke-width: 3;
 }
 
 .selected {
   stroke: magenta;
   fill: none;
   stroke-width: 3;
+}
+
+.location {
+  color: #333;
+}
+
+.detective-1 {
+  stroke: hotpink;
+  color: hotpink;
+}
+
+.detective-2 {
+  stroke: coral;
+  color: coral;
+}
+
+.detective-3 {
+  stroke: aquamarine;
+  color: aquamarine;
+}
+
+.detective-4 {
+  stroke: royalblue;
+  color: royalblue;
+}
+
+.detective-5 {
+  stroke: gold;
+  color: gold;
+}
+
+.mr-x {
+  stroke: slategray;
 }
 
 .station {
