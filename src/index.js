@@ -106,26 +106,23 @@ function plotDetectivePosition(location, detective) {
 const db = firebase.firestore();
 
 const currentGameRef = db.collection("games").doc("tcZwNAgeeZuJBzNl48l1");
+const detectivesRef = currentGameRef.collection("detectives");
 
-currentGameRef.get().then((doc) => {
-  if (doc.exists) {
-    const { positions } = doc.data();
-    for (const detectivePosition in positions) {
-      let location = positions[detectivePosition];
-      plotDetectivePosition(location, detectivePosition);
-    }
-  } else {
-    console.log("nothing found, sadly it's all gone to poop");
-  }
+// currentGameRef.get().then((doc) => {
+detectivesRef.get().then((querySnaphot) => {
+  querySnaphot.forEach((doc) => {
+    let { currentLocation } = doc.data();
+    plotDetectivePosition(currentLocation, `detective-${doc.id}`);
+  });
 });
 
 function saveDetectiveLocation(detective, location) {
-  currentGameRef
+  const detectiveNumber = detective.split("-").pop();
+  detectivesRef
+    .doc(detectiveNumber)
     .set(
       {
-        positions: {
-          [`${detective}`]: parseInt(location, 10),
-        },
+        currentLocation: parseInt(location, 10),
       },
       { merge: true }
     )
