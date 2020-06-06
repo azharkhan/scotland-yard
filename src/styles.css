@@ -96,5 +96,6 @@ body {
 }
 .game-board {
   background-image: url("/assets/map_large.png");
-  background-size: cover;
+  background-size: 100% auto;
+  background-repeat: no-repeat;
 }

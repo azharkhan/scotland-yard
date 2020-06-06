@@ -124,7 +124,7 @@ function saveDetectiveLocation(detective, location) {
     .set(
       {
         positions: {
-          [`${detective}`]: location,
+          [`${detective}`]: parseInt(location, 10),
         },
       },
       { merge: true }
@@ -134,7 +134,17 @@ function saveDetectiveLocation(detective, location) {
       if (currentLocation) {
         svg.removeChild(currentLocation);
       }
+      // remove current detective position
+      const detectiveLocation = document.querySelector(`circle.${detective}`);
+      if (detectiveLocation) {
+        svg.removeChild(detectiveLocation);
+      }
       plotDetectivePosition(location, detective);
+      removeClassFromAllObjects("available");
+      removeClassFromAllObjects("taxi");
+      removeClassFromAllObjects("bus");
+      removeClassFromAllObjects("river");
+      removeClassFromAllObjects("underground");
     });
 }
 
