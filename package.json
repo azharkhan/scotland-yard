@@ -18,6 +18,7 @@
     "dotenv": "^8.2.0",
     "firebase": "^7.14.6",
     "vue": "^2.6.11",
-    "vue-hot-reload-api": "^2.3.4"
+    "vue-hot-reload-api": "^2.3.4",
+    "vuefire": "^2.2.2"
   }
 }
