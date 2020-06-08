@@ -1,7 +1,7 @@
 <template>
   <div class="game">
     <div class="game-board">
-      <Map />
+      <Map :detectives="detectives" />
     </div>
     <div class="players">
       <div class="player mr-x">
@@ -10,9 +10,9 @@
         </div>
       </div>
       <Detective
-        v-for="detective in detectives"
-        :key="detective"
-        :num="detective"
+        v-for="(detective, index) in detectives"
+        :key="detective.currentLocation || index"
+        :data="detective"
       />
     </div>
   </div>
@@ -21,6 +21,7 @@
 <script>
 import Map from "./Map.vue";
 import Detective from "./Detective.vue";
+import { db } from "../db";
 
 export default {
   name: "App",
@@ -28,10 +29,14 @@ export default {
   data() {
     return {
       name: "Mr. X",
-      detectives: [1, 2, 3, 4, 5],
+      detectives: [],
     };
+  },
+  firestore: {
+    detectives: db
+      .collection("games")
+      .doc("tcZwNAgeeZuJBzNl48l1")
+      .collection("detectives"),
   },
 };
 </script>
-
-<style></style>
