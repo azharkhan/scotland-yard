@@ -8,12 +8,12 @@ body {
 .game {
   padding: 10px;
   display: grid;
-  grid-template-columns: 4fr 1fr;
   height: 100vh;
 }
 
 .players {
   display: grid;
+  grid-template-columns: repeat(5, 1fr);
 }
 
 .player {

@@ -4,11 +4,6 @@
       <Map :detectives="detectives" />
     </div>
     <div class="players">
-      <div class="player mr-x">
-        <div class="info">
-          <h1>{{ name }}</h1>
-        </div>
-      </div>
       <Detective
         v-for="(detective, index) in detectives"
         :key="detective.currentLocation || index"
