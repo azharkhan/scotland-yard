@@ -7,13 +7,14 @@
   >
     <circle
       v-for="station in stationCoords"
+      :class="{ selected: station.selected }"
       class="station"
       :key="station.number"
       :ref="station.number"
       :data-point="station.number"
       :cx="station.cx"
       :cy="station.cy"
-      r="7.125"
+      :r="station.selected ? 15 : 7.125"
       fill="#F9F9F9"
       fill-opacity="0.1"
       stroke="#3F3F3F"
@@ -61,14 +62,15 @@ export default {
     },
     selectStation: function(event) {
       const stationNumber = event.target.dataset.point;
-      const stationElement = this.$refs[stationNumber][0];
-      const attributes = {
-        cx: stationElement.cx.baseVal.value,
-        cy: stationElement.cy.baseVal.value,
-        point: stationNumber,
-      };
-
-      this.addCircleToBoard(attributes);
+      // remove any existing selected stations
+      this.stationCoords
+        .filter(station => station.selected)
+        .forEach(station => (station.selected = false));
+      // find the matching station and set to selected
+      const matchingStation = this.stationCoords.find(
+        station => station.number === stationNumber
+      );
+      matchingStation.selected = true;
     },
   },
   mounted: function() {
