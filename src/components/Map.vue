@@ -75,18 +75,24 @@ export default {
       matchingStation.selected = true;
     },
   },
-  mounted: function() {
-    this.detectives.map(detective => {
-      const point = document.querySelector(
-        `[data-point="${detective.currentLocation.toString()}"]`
-      );
-      const attributes = {
-        cx: point.getAttributeNS(null, "cx"),
-        cy: point.getAttributeNS(null, "cy"),
-        className: `detective ${detective.role}`,
-      };
-      this.addCircleToBoard(attributes);
-    });
+  watch: {
+    // initially the value is unavailable, we need to watch for changes to plot
+    detectives: {
+      deep: true,
+      handler() {
+        this.detectives.map(detective => {
+          const point = document.querySelector(
+            `[data-point="${detective.currentLocation.toString()}"]`
+          );
+          const attributes = {
+            cx: point.getAttributeNS(null, "cx"),
+            cy: point.getAttributeNS(null, "cy"),
+            className: `detective ${detective.role}`,
+          };
+          this.addCircleToBoard(attributes);
+        });
+      },
+    },
   },
 };
 </script>
