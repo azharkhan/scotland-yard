@@ -92,7 +92,7 @@ export default {
 </script>
 <style>
 .game-board {
-  background-image: url("../assets/map_large.png");
+  background-image: url("../assets/map-min.png");
   background-size: 100% auto;
   background-repeat: no-repeat;
 }

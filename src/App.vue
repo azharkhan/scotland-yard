@@ -1,8 +1,6 @@
 <template>
   <div class="game">
-    <div class="game-board" :style="image">
-      <Map :detectives="detectives" />
-    </div>
+    <Map :detectives="detectives" />
     <div class="players">
       <Detective
         v-for="(detective, index) in detectives"
@@ -26,7 +24,6 @@ export default {
     return {
       name: "Mr. X",
       detectives: [],
-      image: { backgroundImage: "url('~/src/assets/map_large.png')" },
     };
   },
   firestore: {
