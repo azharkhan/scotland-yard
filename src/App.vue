@@ -1,3 +1,44 @@
+<template>
+  <div class="game">
+    <div class="game-board" :style="image">
+      <Map :detectives="detectives" />
+    </div>
+    <div class="players">
+      <Detective
+        v-for="(detective, index) in detectives"
+        :key="detective.currentLocation || index"
+        :data="detective"
+      />
+    </div>
+  </div>
+</template>
+
+<script>
+import Map from "./components/Map.vue";
+
+import Detective from "./components/Detective.vue";
+import { db } from "./db";
+
+export default {
+  name: "App",
+  components: { Map, Detective },
+  data() {
+    return {
+      name: "Mr. X",
+      detectives: [],
+      image: { backgroundImage: "url('~/src/assets/map_large.png')" },
+    };
+  },
+  firestore: {
+    detectives: db
+      .collection("games")
+      .doc("tcZwNAgeeZuJBzNl48l1")
+      .collection("detectives"),
+  },
+};
+</script>
+
+<style>
 html,
 body {
   margin: 0;
@@ -99,8 +140,4 @@ body {
 .river {
   stroke: black;
 }
-.game-board {
-  background-image: url("/assets/map_large.png");
-  background-size: 100% auto;
-  background-repeat: no-repeat;
-}
+</style>

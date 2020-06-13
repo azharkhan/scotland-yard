@@ -1,32 +1,34 @@
 <template>
-  <svg
-    id="board"
-    viewBox="0 -3 900 669"
-    xmlns="http://www.w3.org/2000/svg"
-    xmlns:xlink="http://www.w3.org/1999/xlink"
-  >
-    <circle
-      v-for="station in stationCoords"
-      :class="{ selected: station.selected }"
-      class="station"
-      :key="station.number"
-      :ref="station.number"
-      :data-point="station.number"
-      :cx="station.cx"
-      :cy="station.cy"
-      :r="station.selected ? 15 : 7.125"
-      fill="#F9F9F9"
-      fill-opacity="0.1"
-      stroke="#3F3F3F"
-      stroke-width="0.75"
-      @click="selectStation"
-    />
-  </svg>
+  <div class="game-board">
+    <svg
+      id="board"
+      viewBox="0 -3 900 669"
+      xmlns="http://www.w3.org/2000/svg"
+      xmlns:xlink="http://www.w3.org/1999/xlink"
+    >
+      <circle
+        v-for="station in stationCoords"
+        :class="{ selected: station.selected }"
+        class="station"
+        :key="station.number"
+        :ref="station.number"
+        :data-point="station.number"
+        :cx="station.cx"
+        :cy="station.cy"
+        :r="station.selected ? 15 : 7.125"
+        fill="#F9F9F9"
+        fill-opacity="0.1"
+        stroke="#3F3F3F"
+        stroke-width="0.75"
+        @click="selectStation"
+      />
+    </svg>
+  </div>
 </template>
 
 <script>
-import stationCoords from "../../assets/station-coordinates.json";
-import stations from "../../assets/stations.json";
+import stationCoords from "../assets/station-coordinates.json";
+import stations from "../assets/stations.json";
 
 export default {
   name: "Map",
@@ -74,9 +76,6 @@ export default {
     },
   },
   mounted: function() {
-    const svg = document.getElementById("board");
-    const SVG_NS = "http://www.w3.org/2000/svg";
-
     this.detectives.map(detective => {
       const point = document.querySelector(
         `[data-point="${detective.currentLocation.toString()}"]`
@@ -91,3 +90,10 @@ export default {
   },
 };
 </script>
+<style>
+.game-board {
+  background-image: url("../assets/map_large.png");
+  background-size: 100% auto;
+  background-repeat: no-repeat;
+}
+</style>
