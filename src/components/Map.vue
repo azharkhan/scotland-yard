@@ -8,14 +8,14 @@
     >
       <circle
         v-for="station in stationCoords"
-        :class="{ selected: station.selected }"
+        :class="[{ selected: station.selected, available: station.available }, station.available ? station.type : '']"
         class="station"
         :key="station.number"
         :ref="station.number"
         :data-point="station.number"
         :cx="station.cx"
         :cy="station.cy"
-        :r="station.selected ? 15 : 7.125"
+        :r="station.selected ? 10 : 7.125"
         fill="#F9F9F9"
         fill-opacity="0.1"
         stroke="#3F3F3F"
@@ -43,6 +43,30 @@ export default {
     detectives: Array,
   },
   methods: {
+    clearDetectiveMarkers: function() {
+      const svg = document.getElementById("board");
+      document.querySelectorAll("circle.detective").forEach(node => {
+        svg.removeChild(node);
+      });
+    },
+
+    clearSelected: function() {
+      // remove any existing selected stations
+      this.stationCoords
+        .filter(station => station.selected)
+        .forEach(station => (station.selected = false));
+    },
+
+    clearAvailableRoutes: function() {
+      // clean up currently available routes
+      this.stationCoords
+        .filter(station => station.available)
+        .forEach(station => {
+          station.available = false;
+          station.type = false;
+        });
+    },
+
     addCircleToBoard: function({
       cx,
       cy,
@@ -62,17 +86,36 @@ export default {
       const svg = document.getElementById("board");
       svg.appendChild(circle);
     },
+
     selectStation: function(event) {
       const stationNumber = event.target.dataset.point;
       // remove any existing selected stations
-      this.stationCoords
-        .filter(station => station.selected)
-        .forEach(station => (station.selected = false));
+      this.clearSelected();
       // find the matching station and set to selected
       const matchingStation = this.stationCoords.find(
         station => station.number === stationNumber
       );
       matchingStation.selected = true;
+
+      this.showNearbyStations(matchingStation);
+    },
+
+    showNearbyStations: function(selectedStation) {
+      const stationNumber = selectedStation.number;
+      // clean up currently available routes
+      this.clearAvailableRoutes();
+      // get routes for given station
+      const routes = this.stations[stationNumber];
+      for (let routeType in routes) {
+        let stops = routes[routeType];
+        stops.forEach(stop => {
+          const matchingStation = this.stationCoords.find(
+            station => station.number === stop
+          );
+          matchingStation.available = true;
+          matchingStation.type = routeType;
+        });
+      }
     },
   },
   watch: {
@@ -80,6 +123,12 @@ export default {
     detectives: {
       deep: true,
       handler() {
+        // clear all existing markers such that we can place new ones
+        // this is needed when detectives move
+        this.clearDetectiveMarkers();
+        this.clearSelected();
+        this.clearAvailableRoutes();
+
         this.detectives.map(detective => {
           const point = document.querySelector(
             `[data-point="${detective.currentLocation.toString()}"]`
