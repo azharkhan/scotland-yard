@@ -20,7 +20,7 @@
         fill-opacity="0.1"
         stroke="#3F3F3F"
         stroke-width="0.75"
-        @click="selectStation"
+        @click="selectStation(station.number)"
       />
     </svg>
   </div>
@@ -41,6 +41,7 @@ export default {
   },
   props: {
     detectives: Array,
+    currentPlayer: Object || null,
   },
   methods: {
     clearDetectiveMarkers: function() {
@@ -87,8 +88,7 @@ export default {
       svg.appendChild(circle);
     },
 
-    selectStation: function(event) {
-      const stationNumber = event.target.dataset.point;
+    selectStation: function(stationNumber) {
       // remove any existing selected stations
       this.clearSelected();
       // find the matching station and set to selected
@@ -140,6 +140,11 @@ export default {
           };
           this.addCircleToBoard(attributes);
         });
+      },
+    },
+    currentPlayer: {
+      handler() {
+        this.selectStation(this.currentPlayer.currentLocation.toString());
       },
     },
   },

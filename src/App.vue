@@ -1,11 +1,13 @@
 <template>
   <div class="game">
-    <Map :detectives="detectives" />
+    <Map :detectives="detectives" :currentPlayer="currentPlayer" />
     <div class="players">
       <Detective
         v-for="(detective, index) in detectives"
         :key="detective.currentLocation || index"
         :data="detective"
+        :currentPlayer="currentPlayer"
+        @setTurn="handleSetTurn"
       />
     </div>
   </div>
@@ -24,6 +26,7 @@ export default {
     return {
       name: "Mr. X",
       detectives: [],
+      currentPlayer: null,
     };
   },
   firestore: {
@@ -31,6 +34,11 @@ export default {
       .collection("games")
       .doc("tcZwNAgeeZuJBzNl48l1")
       .collection("detectives"),
+  },
+  methods: {
+    handleSetTurn: function(data) {
+      this.currentPlayer = data;
+    },
   },
 };
 </script>

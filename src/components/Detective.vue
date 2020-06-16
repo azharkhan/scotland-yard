@@ -1,14 +1,14 @@
 <template>
-  <div class="player" :class="data.role">
+  <div class="player">
     <div class="info">
-      <h1>Detective</h1>
+      <h1 @click="setPlayerTurn" :class="isCurrentPlayer ? this.data.role : ''">Detective</h1>
       <h2 class="location">{{ data.currentLocation }}</h2>
       <ul class="transportation">
         <li>Taxi: {{ data.taxi }}</li>
         <li>Bus: {{ data.bus }}</li>
         <li>Underground: {{ data.underground }}</li>
       </ul>
-      <button @click="saveLocation">Set Location</button>
+      <button v-if="isCurrentPlayer" @click="saveLocation">Set Location</button>
     </div>
   </div>
 </template>
@@ -20,8 +20,12 @@ export default {
   name: "Detective",
   props: {
     data: Object,
+    currentPlayer: Object,
   },
   computed: {
+    isCurrentPlayer: function() {
+      return this.currentPlayer && this.currentPlayer.role === this.data.role;
+    },
     detectiveNumber: function() {
       return this.data.role.split("-").pop();
     },
@@ -52,13 +56,18 @@ export default {
         )
         .then(() => {
           this.removeSelected();
-          // removeClassFromAllObjects("available");
-          // removeClassFromAllObjects("taxi");
-          // removeClassFromAllObjects("bus");
-          // removeClassFromAllObjects("river");
-          // removeClassFromAllObjects("underground");
         });
+    },
+    // temporarily use this to mimic setting turns
+    setPlayerTurn: function() {
+      this.$emit("setTurn", this.data);
     },
   },
 };
 </script>
+
+<style scoped>
+h1:hover {
+  cursor: pointer;
+}
+</style>
