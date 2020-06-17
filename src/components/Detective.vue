@@ -8,14 +8,11 @@
         <li>Bus: {{ data.bus }}</li>
         <li>Underground: {{ data.underground }}</li>
       </ul>
-      <button v-if="isCurrentPlayer" @click="saveLocation">Set Location</button>
     </div>
   </div>
 </template>
 
 <script>
-import { db } from "../db";
-
 export default {
   name: "Detective",
   props: {
@@ -36,28 +33,6 @@ export default {
       const selectedElement = document.querySelector(".selected");
       svg.removeChild(selectedElement);
     },
-    saveLocation: function() {
-      const selectedElement = document.querySelector(".selected");
-
-      if (!selectedElement) {
-        return;
-      }
-      const location = selectedElement.dataset.point;
-
-      const currentGameRef = db.collection("games").doc("tcZwNAgeeZuJBzNl48l1");
-      const detectivesRef = currentGameRef.collection("detectives");
-      detectivesRef
-        .doc(this.detectiveNumber)
-        .set(
-          {
-            currentLocation: parseInt(location, 10),
-          },
-          { merge: true }
-        )
-        .then(() => {
-          this.removeSelected();
-        });
-    },
     // temporarily use this to mimic setting turns
     setPlayerTurn: function() {
       this.$emit("setTurn", this.data);
@@ -69,5 +44,25 @@ export default {
 <style scoped>
 h1:hover {
   cursor: pointer;
+}
+
+.detective-1 {
+  color: hotpink;
+}
+
+.detective-2 {
+  color: coral;
+}
+
+.detective-3 {
+  color: aquamarine;
+}
+
+.detective-4 {
+  color: royalblue;
+}
+
+.detective-5 {
+  color: gold;
 }
 </style>

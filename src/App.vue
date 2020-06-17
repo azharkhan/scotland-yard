@@ -1,6 +1,7 @@
 <template>
   <div class="game">
-    <Map :detectives="detectives" :currentPlayer="currentPlayer" />
+    <StatusBar :currentPlayer="currentPlayer" />
+    <Map :detectives="detectives" :currentPlayer="currentPlayer" @setLocation="handleSetLocation" />
     <div class="players">
       <Detective
         v-for="(detective, index) in detectives"
@@ -15,13 +16,14 @@
 
 <script>
 import Map from "./components/Map.vue";
-
 import Detective from "./components/Detective.vue";
+import StatusBar from "./components/StatusBar.vue";
+
 import { db } from "./db";
 
 export default {
   name: "App",
-  components: { Map, Detective },
+  components: { Map, Detective, StatusBar },
   data() {
     return {
       name: "Mr. X",
@@ -38,6 +40,41 @@ export default {
   methods: {
     handleSetTurn: function(data) {
       this.currentPlayer = data;
+    },
+
+    selectNextPlayer: function(currentPlayerNumber) {
+      // TODO: change this to proper selection
+      let nextPlayerNumber = parseInt(currentPlayerNumber, 10) + 1;
+      if (nextPlayerNumber > 5) {
+        nextPlayerNumber = 1;
+      }
+      this.currentPlayer = this.detectives
+        .filter(
+          detective =>
+            detective.role === `detective-${nextPlayerNumber.toString()}`
+        )
+        .pop();
+    },
+
+    handleSetLocation: function(stationNumber) {
+      if (!stationNumber) {
+        return;
+      }
+      const currentGameRef = db.collection("games").doc("tcZwNAgeeZuJBzNl48l1");
+      const detectivesCollection = currentGameRef.collection("detectives");
+      const currentPlayerNumber = this.currentPlayer.role.split("-").pop();
+
+      detectivesCollection
+        .doc(currentPlayerNumber)
+        .set(
+          {
+            currentLocation: parseInt(stationNumber, 10),
+          },
+          { merge: true }
+        )
+        .then(() => {
+          this.selectNextPlayer(currentPlayerNumber);
+        });
     },
   },
 };
@@ -66,83 +103,7 @@ body {
   border: 1px #ececec solid;
 }
 
-.detective {
-  stroke: magenta;
-  fill: none;
-  stroke-width: 3;
-}
-
-.selected {
-  stroke: magenta;
-  fill: none;
-  stroke-width: 3;
-}
-
-.location {
-  color: #333;
-}
-
-.transportation {
-  color: #333;
-}
-
-.detective-1 {
-  stroke: hotpink;
-  color: hotpink;
-}
-
-.detective-2 {
-  stroke: coral;
-  color: coral;
-}
-
-.detective-3 {
-  stroke: aquamarine;
-  color: aquamarine;
-}
-
-.detective-4 {
-  stroke: royalblue;
-  color: royalblue;
-}
-
-.detective-5 {
-  stroke: gold;
-  color: gold;
-}
-
 .mr-x {
   stroke: slategray;
-}
-
-.station {
-  stroke: black;
-  fill: transparent;
-}
-
-.station:hover {
-  cursor: pointer;
-  stroke: red;
-  stroke-width: 2;
-}
-
-.available {
-  stroke-width: 3;
-}
-
-.taxi {
-  stroke: yellow;
-}
-
-.underground {
-  stroke: crimson;
-}
-
-.bus {
-  stroke: turquoise;
-}
-
-.river {
-  stroke: black;
 }
 </style>

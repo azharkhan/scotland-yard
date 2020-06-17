@@ -20,7 +20,7 @@
         fill-opacity="0.1"
         stroke="#3F3F3F"
         stroke-width="0.75"
-        @click="selectStation(station.number)"
+        @click="station.available ? setCurrentPlayerLocation(station.number) : null"
       />
     </svg>
   </div>
@@ -86,6 +86,10 @@ export default {
 
       const svg = document.getElementById("board");
       svg.appendChild(circle);
+    },
+
+    setCurrentPlayerLocation: function(stationNumber) {
+      this.$emit("setLocation", stationNumber);
     },
 
     selectStation: function(stationNumber) {
@@ -155,5 +159,74 @@ export default {
   background-image: url("../assets/map-min.png");
   background-size: 100% auto;
   background-repeat: no-repeat;
+}
+
+.detective {
+  stroke: magenta;
+  fill: none;
+  stroke-width: 3;
+}
+
+.selected {
+  stroke: magenta;
+  fill: none;
+  stroke-width: 3;
+}
+
+.location {
+  color: #333;
+}
+
+.transportation {
+  color: #333;
+}
+
+.station {
+  stroke: black;
+  fill: transparent;
+}
+
+.available {
+  stroke-width: 3;
+}
+
+.available:hover {
+  cursor: pointer;
+  stroke: red;
+}
+
+.taxi {
+  stroke: yellow;
+}
+
+.underground {
+  stroke: crimson;
+}
+
+.bus {
+  stroke: turquoise;
+}
+
+.river {
+  stroke: black;
+}
+.detective-1 {
+  stroke: hotpink;
+}
+
+.detective-2 {
+  stroke: coral;
+}
+
+.detective-3 {
+  stroke: aquamarine;
+}
+
+.detective-4 {
+  stroke: royalblue;
+}
+
+.detective-5 {
+  stroke: gold;
 }
 </style>
