@@ -28,7 +28,6 @@ export default {
     return {
       name: "Mr. X",
       detectives: [],
-      currentPlayer: null,
       gameInfo: null,
     };
   },
@@ -43,40 +42,63 @@ export default {
     roundNumber: function() {
       return this.gameInfo && this.gameInfo.round;
     },
+    mrX: function() {
+      return this.gameInfo && this.gameInfo["mr-x"];
+    },
+    playerOnTurn: function() {
+      return this.gameInfo && this.gameInfo.playerOnTurn;
+    },
+    isMisterXTurn: function() {
+      return this.playerOnTurn && this.playerOnTurn === "mr-x";
+    },
+    currentPlayer: function() {
+      if (!this.playerOnTurn) {
+        return null;
+      }
+      if (this.playerOnTurn !== "mr-x") {
+        return (
+          this.detectives.length &&
+          this.detectives.find(
+            detective => detective.role === this.playerOnTurn
+          )
+        );
+      }
+      return this.mrX;
+    },
   },
   methods: {
-    handleSetTurn: function(data) {
-      this.currentPlayer = data;
+    handleSetTurn: function(role) {
+      const currentGameRef = db.collection("games").doc("tcZwNAgeeZuJBzNl48l1");
+      currentGameRef.set(
+        {
+          playerOnTurn: role,
+        },
+        { merge: true }
+      );
     },
 
     startNewRound: function() {
       const currentGameRef = db.collection("games").doc("tcZwNAgeeZuJBzNl48l1");
-      currentGameRef
-        .set(
-          {
-            round: this.roundNumber + 1,
-          },
-          { merge: true }
-        )
-        .then(() => {
-          // this.selectNextPlayer(currentPlayerNumber);
-          console.log("done");
-        });
+      currentGameRef.set(
+        {
+          round: this.roundNumber + 1,
+          playerOnTurn: "mr-x",
+        },
+        { merge: true }
+      );
     },
 
     selectNextPlayer: function(currentPlayerNumber) {
       // TODO: change this to proper selection
-      let nextPlayerNumber = parseInt(currentPlayerNumber, 10) + 1;
+      const nextPlayerNumber = parseInt(currentPlayerNumber, 10) + 1;
       if (nextPlayerNumber > 5) {
         this.startNewRound();
-        nextPlayerNumber = 1;
+        return;
+      } else {
+        // select next detective
+        const nextPlayerRole = `detective-${nextPlayerNumber.toString()}`;
+        this.handleSetTurn(nextPlayerRole);
       }
-      this.currentPlayer = this.detectives
-        .filter(
-          detective =>
-            detective.role === `detective-${nextPlayerNumber.toString()}`
-        )
-        .pop();
     },
 
     handleSetLocation: function({ stationNumber, ticketType }) {

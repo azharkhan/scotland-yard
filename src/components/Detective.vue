@@ -40,7 +40,7 @@ export default {
     },
     // temporarily use this to mimic setting turns
     setPlayerTurn: function() {
-      this.$emit("setTurn", this.data);
+      this.$emit("setTurn", this.data.role);
     },
   },
 };
