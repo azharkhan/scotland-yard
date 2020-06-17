@@ -1,20 +1,25 @@
 <template>
   <div class="player">
     <div class="info">
-      <h1 @click="setPlayerTurn" :class="isCurrentPlayer ? this.data.role : ''">Detective</h1>
+      <div class="name-and-icon" @click="setPlayerTurn">
+        <BadgeIcon :role="this.data.role" />
+        <div class="name" :class="isCurrentPlayer ? this.data.role : ''">Detective</div>
+      </div>
       <h2 class="location">{{ data.currentLocation }}</h2>
       <ul class="transportation">
-        <li>Taxi: {{ data.taxi }}</li>
-        <li>Bus: {{ data.bus }}</li>
-        <li>Underground: {{ data.underground }}</li>
+        <li>Taxi: {{ data.tickets.taxi }}</li>
+        <li>Bus: {{ data.tickets.bus }}</li>
+        <li>Underground: {{ data.tickets.underground }}</li>
       </ul>
     </div>
   </div>
 </template>
 
 <script>
+import BadgeIcon from "./BadgeIcon";
 export default {
   name: "Detective",
+  components: { BadgeIcon },
   props: {
     data: Object,
     currentPlayer: Object,
@@ -42,8 +47,18 @@ export default {
 </script>
 
 <style scoped>
-h1:hover {
+.name-and-icon:hover {
   cursor: pointer;
+}
+
+.name-and-icon {
+  display: flex;
+  align-items: center;
+}
+
+.name {
+  font-size: 1.15em;
+  margin-left: 1em;
 }
 
 .detective-1 {

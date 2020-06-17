@@ -20,7 +20,7 @@
         fill-opacity="0.1"
         stroke="#3F3F3F"
         stroke-width="0.75"
-        @click="station.available ? setCurrentPlayerLocation(station.number) : null"
+        @click="station.available ? setCurrentPlayerLocation(station) : null"
       />
     </svg>
   </div>
@@ -88,8 +88,24 @@ export default {
       svg.appendChild(circle);
     },
 
-    setCurrentPlayerLocation: function(stationNumber) {
-      this.$emit("setLocation", stationNumber);
+    validateMove: function(ticketType) {
+      return this.currentPlayer.tickets[ticketType] > 0;
+    },
+
+    setCurrentPlayerLocation: function(station) {
+      const isMoveAllowed = this.validateMove(station.type);
+      if (!isMoveAllowed) {
+        alert(`You do not have enough ${station.type} tickets`);
+        return;
+      }
+      const stationNumber = station.number;
+      const acceptMove = confirm("Are you sure?");
+      if (isMoveAllowed && acceptMove) {
+        this.$emit("setLocation", {
+          stationNumber: stationNumber,
+          ticketType: station.type,
+        });
+      }
     },
 
     selectStation: function(stationNumber) {
@@ -111,14 +127,16 @@ export default {
       // get routes for given station
       const routes = this.stations[stationNumber];
       for (let routeType in routes) {
-        let stops = routes[routeType];
-        stops.forEach(stop => {
-          const matchingStation = this.stationCoords.find(
-            station => station.number === stop
-          );
-          matchingStation.available = true;
-          matchingStation.type = routeType;
-        });
+        if (this.currentPlayer.tickets[routeType] > 0) {
+          let stops = routes[routeType];
+          stops.forEach(stop => {
+            const matchingStation = this.stationCoords.find(
+              station => station.number === stop
+            );
+            matchingStation.available = true;
+            matchingStation.type = routeType;
+          });
+        }
       }
     },
   },

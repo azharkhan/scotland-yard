@@ -1,6 +1,6 @@
 <template>
   <div class="game">
-    <StatusBar :currentPlayer="currentPlayer" />
+    <StatusBar :currentPlayer="currentPlayer" :round="roundNumber" />
     <Map :detectives="detectives" :currentPlayer="currentPlayer" @setLocation="handleSetLocation" />
     <div class="players">
       <Detective
@@ -29,6 +29,7 @@ export default {
       name: "Mr. X",
       detectives: [],
       currentPlayer: null,
+      gameInfo: null,
     };
   },
   firestore: {
@@ -36,16 +37,38 @@ export default {
       .collection("games")
       .doc("tcZwNAgeeZuJBzNl48l1")
       .collection("detectives"),
+    gameInfo: db.collection("games").doc("tcZwNAgeeZuJBzNl48l1"),
+  },
+  computed: {
+    roundNumber: function() {
+      return this.gameInfo && this.gameInfo.round;
+    },
   },
   methods: {
     handleSetTurn: function(data) {
       this.currentPlayer = data;
     },
 
+    startNewRound: function() {
+      const currentGameRef = db.collection("games").doc("tcZwNAgeeZuJBzNl48l1");
+      currentGameRef
+        .set(
+          {
+            round: this.roundNumber + 1,
+          },
+          { merge: true }
+        )
+        .then(() => {
+          // this.selectNextPlayer(currentPlayerNumber);
+          console.log("done");
+        });
+    },
+
     selectNextPlayer: function(currentPlayerNumber) {
       // TODO: change this to proper selection
       let nextPlayerNumber = parseInt(currentPlayerNumber, 10) + 1;
       if (nextPlayerNumber > 5) {
+        this.startNewRound();
         nextPlayerNumber = 1;
       }
       this.currentPlayer = this.detectives
@@ -56,19 +79,21 @@ export default {
         .pop();
     },
 
-    handleSetLocation: function(stationNumber) {
+    handleSetLocation: function({ stationNumber, ticketType }) {
       if (!stationNumber) {
         return;
       }
       const currentGameRef = db.collection("games").doc("tcZwNAgeeZuJBzNl48l1");
       const detectivesCollection = currentGameRef.collection("detectives");
       const currentPlayerNumber = this.currentPlayer.role.split("-").pop();
+      this.currentPlayer.tickets[ticketType] -= 1;
 
       detectivesCollection
         .doc(currentPlayerNumber)
         .set(
           {
             currentLocation: parseInt(stationNumber, 10),
+            tickets: this.currentPlayer.tickets,
           },
           { merge: true }
         )
