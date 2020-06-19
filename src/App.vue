@@ -6,22 +6,6 @@
     </div>
     <router-view />
   </div>
-  <!-- <StatusBar :currentPlayer="currentPlayer" :round="roundNumber" />
-    <Map
-      :detectives="detectives"
-      :currentPlayer="currentPlayer"
-      @setLocation="handleSetLocation"
-    />
-    <div class="players">
-      <Detective
-        v-for="(detective, index) in detectives"
-        :key="detective.currentLocation || index"
-        :data="detective"
-        :currentPlayer="currentPlayer"
-        @setTurn="handleSetTurn"
-      />
-    </div>
-  </div>-->
 </template>
 
 <script>
@@ -31,19 +15,27 @@ export default {
 </script>
 
 <style>
+* {
+  box-sizing: border-box;
+}
+
 html,
 body {
   margin: 0;
   padding: 0;
-  box-sizing: border-box;
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color: #2c3e50;
 }
 
+#app {
+  height: 100vh;
+  width: 100vw;
+}
+
 #nav {
-  padding: 30px;
+  padding: 10px;
 }
 
 #nav a {

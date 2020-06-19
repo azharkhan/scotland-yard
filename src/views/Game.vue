@@ -1,7 +1,11 @@
 <template>
   <div class="game">
     <StatusBar :currentPlayer="currentPlayer" :round="roundNumber" />
-    <Map :detectives="detectives" :currentPlayer="currentPlayer" @setLocation="handleSetLocation" />
+    <Map
+      :detectives="detectives"
+      :currentPlayer="currentPlayer"
+      @setLocation="handleSetLocation"
+    />
     <div class="players">
       <Detective
         v-for="(detective, index) in detectives"
@@ -30,7 +34,7 @@ export default {
     return {
       name: "Mr. X",
       detectives: [],
-      gameInfo: null,
+      game: null,
       gameId: this.$route.params.id,
     };
   },
@@ -40,18 +44,18 @@ export default {
         .collection("games")
         .doc(this.gameId)
         .collection("detectives"),
-      gameInfo: db.collection("games").doc(this.gameId),
+      game: db.collection("games").doc(this.gameId),
     };
   },
   computed: {
     roundNumber: function() {
-      return this.gameInfo && this.gameInfo.round;
+      return this.game && this.game.round;
     },
     mrX: function() {
-      return this.gameInfo && this.gameInfo["mr-x"];
+      return this.game && this.game["mr-x"];
     },
     playerOnTurn: function() {
-      return this.gameInfo && this.gameInfo.playerOnTurn;
+      return this.game && this.game.playerOnTurn;
     },
     isMisterXTurn: function() {
       return this.playerOnTurn && this.playerOnTurn === "mr-x";
@@ -73,28 +77,19 @@ export default {
   },
   methods: {
     handleSetTurn: function(role) {
-      const currentGameRef = db.collection("games").doc(this.gameId);
-      currentGameRef.set(
-        {
-          playerOnTurn: role,
-        },
-        { merge: true }
-      );
+      this.$firestoreRefs.game.update({ playerOnTurn: role });
     },
 
     startNewRound: function() {
-      const currentGameRef = db.collection("games").doc(this.gameId);
-      currentGameRef.set(
-        {
-          round: this.roundNumber + 1,
-          playerOnTurn: "mr-x",
-        },
-        { merge: true }
-      );
+      this.$firestoreRefs.game.update({
+        round: this.roundNumber + 1,
+        playerOnTurn: "mr-x",
+      });
     },
 
-    selectNextPlayer: function(currentPlayerNumber) {
+    selectNextPlayer: function() {
       // TODO: change this to proper selection
+      const currentPlayerNumber = this.currentPlayer.role.split("-").pop();
       const nextPlayerNumber = parseInt(currentPlayerNumber, 10) + 1;
       if (nextPlayerNumber > 5) {
         this.startNewRound();
@@ -110,22 +105,16 @@ export default {
       if (!stationNumber) {
         return;
       }
-      const currentGameRef = db.collection("games").doc(this.gameId);
-      const detectivesCollection = currentGameRef.collection("detectives");
-      const currentPlayerNumber = this.currentPlayer.role.split("-").pop();
       this.currentPlayer.tickets[ticketType] -= 1;
 
-      detectivesCollection
-        .doc(currentPlayerNumber)
-        .set(
-          {
-            currentLocation: parseInt(stationNumber, 10),
-            tickets: this.currentPlayer.tickets,
-          },
-          { merge: true }
-        )
+      this.$firestoreRefs.detectives
+        .doc(this.currentPlayer.id)
+        .update({
+          currentLocation: parseInt(stationNumber, 10),
+          tickets: this.currentPlayer.tickets,
+        })
         .then(() => {
-          this.selectNextPlayer(currentPlayerNumber);
+          this.selectNextPlayer();
         });
     },
   },
