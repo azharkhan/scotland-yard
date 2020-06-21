@@ -1,11 +1,7 @@
 <template>
   <div class="game">
     <StatusBar :currentPlayer="currentPlayer" :round="roundNumber" />
-    <Map
-      :detectives="detectives"
-      :currentPlayer="currentPlayer"
-      @setLocation="handleSetLocation"
-    />
+    <Map :detectives="detectives" :currentPlayer="currentPlayer" @setLocation="handleSetLocation" />
     <div class="players">
       <Detective
         v-for="(detective, index) in detectives"
@@ -24,8 +20,6 @@ import Detective from "../components/Detective.vue";
 import StatusBar from "../components/StatusBar.vue";
 
 import { db } from "../db";
-// eslint-disable-next-line
-const savedGameId = "tcZwNAgeeZuJBzNl48l1";
 
 export default {
   name: "Game",
