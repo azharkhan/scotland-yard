@@ -1,6 +1,7 @@
 <template>
   <div class="game">
     <StatusBar :currentPlayer="currentPlayer" :round="roundNumber" />
+    <Moves :moves="moves" />
     <Map :detectives="detectives" :currentPlayer="currentPlayer" @setLocation="handleSetLocation" />
     <div class="players">
       <Detective
@@ -18,12 +19,13 @@
 import Map from "../components/Map.vue";
 import Detective from "../components/Detective.vue";
 import StatusBar from "../components/StatusBar.vue";
+import Moves from "../components/Moves.vue";
 
 import { db } from "../db";
 
 export default {
   name: "Game",
-  components: { Map, Detective, StatusBar },
+  components: { Map, Detective, StatusBar, Moves },
   data() {
     return {
       name: "Mr. X",
@@ -47,6 +49,12 @@ export default {
     },
     mrX: function() {
       return this.game && this.game["mr-x"];
+    },
+    moves: function() {
+      if (this.mrX) {
+        return this.mrX.moves;
+      }
+      return [];
     },
     playerOnTurn: function() {
       return this.game && this.game.playerOnTurn;

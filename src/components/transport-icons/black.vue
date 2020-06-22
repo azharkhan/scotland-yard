@@ -1,26 +1,7 @@
 <template>
-  <svg
-    xmlns:x="http://ns.adobe.com/Extensibility/1.0/"
-    xmlns:i="http://ns.adobe.com/AdobeIllustrator/10.0/"
-    xmlns:graph="http://ns.adobe.com/Graphs/1.0/"
-    xmlns="http://www.w3.org/2000/svg"
-    xmlns:xlink="http://www.w3.org/1999/xlink"
-    version="1.1"
-    x="0px"
-    y="0px"
-    viewBox="0 0 100 125"
-    style="enable-background:new 0 0 100 100;"
-    xml:space="preserve"
-  >
+  <svg viewBox="0 0 100 125">
     <switch>
-      <foreignObject
-        requiredExtensions="http://ns.adobe.com/AdobeIllustrator/10.0/"
-        x="0"
-        y="0"
-        width="1"
-        height="1"
-      />
-      <g i:extraneous="self">
+      <g>
         <g>
           <path
             d="M94.5,54c1.7,0,3-1.3,3-3V33.6c0-1.6-1.3-3-3-3H67.6l-1,0.8l1.4,5.8c0.6,2.6,0.1,5.3-1.6,7.4c-1.6,2.1-4.2,3.3-6.9,3.3     c-1.6,0-3.2-0.4-4.6-1.3l-5-3.1l-5,3.1c-1.4,0.9-3,1.3-4.6,1.3c-2.7,0-5.2-1.3-6.9-3.4c-1.6-2.1-2.2-4.8-1.6-7.4l1.4-5.8l-1-0.8     H5.5c-1.6,0-3,1.4-3,3V51c0,1.7,1.3,3,3,3c4.4,0,7.9,3.5,7.9,7.9c0,4.4-3.5,7.9-7.9,7.9c-1.6,0-3,1.4-3,3V90c0,1.7,1.3,3,3,3h89     c1.7,0,3-1.3,3-3V72.7c0-1.6-1.3-3-3-3c-4.3,0-7.9-3.5-7.9-7.9C86.6,57.5,90.2,54,94.5,54z M70,80.2H30c-1.6,0-3-1.3-3-3     c0-1.6,1.4-3,3-3H70c1.6,0,3,1.3,3,3C72.9,78.9,71.6,80.2,70,80.2z M70,64.8H30c-1.6,0-3-1.3-3-3c0-1.6,1.4-3,3-3H70     c1.6,0,3,1.3,3,3C72.9,63.5,71.6,64.8,70,64.8z"
@@ -31,25 +12,5 @@
         </g>
       </g>
     </switch>
-    <text
-      x="0"
-      y="115"
-      fill="#000000"
-      font-size="5px"
-      font-weight="bold"
-      font-family="'Helvetica Neue', Helvetica, Arial-Unicode, Arial, Sans-serif"
-    >
-      Created by Alice Design
-    </text>
-    <text
-      x="0"
-      y="120"
-      fill="#000000"
-      font-size="5px"
-      font-weight="bold"
-      font-family="'Helvetica Neue', Helvetica, Arial-Unicode, Arial, Sans-serif"
-    >
-      from the Noun Project
-    </text>
   </svg>
 </template>
