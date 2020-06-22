@@ -9,6 +9,7 @@
     "dev": "npm run serve"
   },
   "dependencies": {
+    "@beyonk/google-fonts-webpack-plugin": "^1.2.3",
     "core-js": "^3.6.5",
     "firebase": "^7.15.1",
     "random-words": "^1.1.1",
