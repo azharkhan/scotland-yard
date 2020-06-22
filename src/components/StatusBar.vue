@@ -1,8 +1,16 @@
 <template>
-  <div class="status" :class="currentPlayer ? currentPlayer.role : ''">
-    <div class="round-number">{{ roundNumber }}</div>
-    <div v-if="!currentPlayer" class="info">Please click on a Detective's name to start</div>
-    <div v-if="currentPlayer" class="info">It's {{ detectiveName }}'s turn</div>
+  <div
+    class="status"
+    :class="[result ? 'game-end' : '', !result && currentPlayer ? currentPlayer.role : '']"
+  >
+    <div class="result" v-if="result">{{ result }}</div>
+    <div v-if="!result" class="round-info">
+      <div class="round-number">{{ roundNumber }}</div>
+      <div class="info">
+        <div v-if="!currentPlayer">Please click on a Detective's name to start</div>
+        <div v-if="currentPlayer">It's {{ detectiveName }}'s turn</div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -12,6 +20,7 @@ export default {
   props: {
     currentPlayer: Object,
     round: Number,
+    result: String,
   },
   computed: {
     detectiveName() {
@@ -28,12 +37,24 @@ export default {
 
 <style scoped>
 .status {
+  background: paleturquoise;
   padding: 5px;
+  height: 30px;
+  width: 100%;
+}
+
+.round-info {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 30px;
-  background: paleturquoise;
+  height: 100%;
+}
+
+.game-end {
+  background: palegreen;
+  height: 100%;
+  text-align: center;
+  font-weight: bold;
 }
 
 .round-number {
@@ -45,6 +66,12 @@ export default {
   text-transform: capitalize;
   font-size: 1.25em;
   margin-left: 1em;
+}
+
+.result {
+  text-transform: uppercase;
+  font-size: 1.5rem;
+  margin-left: 2rem;
 }
 
 .detective-1 {

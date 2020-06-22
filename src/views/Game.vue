@@ -1,14 +1,15 @@
 <template>
   <div class="game">
-    <StatusBar :currentPlayer="currentPlayer" :round="roundNumber" />
+    <StatusBar :currentPlayer="currentPlayer" :round="roundNumber" :result="result" />
     <Moves :moves="moves" />
     <Map :detectives="detectives" :currentPlayer="currentPlayer" @setLocation="handleSetLocation" />
     <div class="players">
+      <MrX v-if="mrX" :data="mrX" :isCurrentPlayer="isMisterXTurn" @setTurn="handleSetTurn" />
       <Detective
         v-for="(detective, index) in detectives"
         :key="detective.currentLocation || index"
         :data="detective"
-        :currentPlayer="currentPlayer"
+        :isCurrentPlayer="currentPlayer && currentPlayer.role === detective.role"
         @setTurn="handleSetTurn"
       />
     </div>
@@ -18,6 +19,7 @@
 <script>
 import Map from "../components/Map.vue";
 import Detective from "../components/Detective.vue";
+import MrX from "../components/MrX.vue";
 import StatusBar from "../components/StatusBar.vue";
 import Moves from "../components/Moves.vue";
 
@@ -25,7 +27,7 @@ import { db } from "../db";
 
 export default {
   name: "Game",
-  components: { Map, Detective, StatusBar, Moves },
+  components: { Map, Detective, StatusBar, Moves, MrX },
   data() {
     return {
       name: "Mr. X",
@@ -62,6 +64,9 @@ export default {
     isMisterXTurn: function() {
       return this.playerOnTurn && this.playerOnTurn === "mr-x";
     },
+    result: function() {
+      return this.game && this.game.result;
+    },
     currentPlayer: function() {
       if (!this.playerOnTurn) {
         return null;
@@ -83,6 +88,11 @@ export default {
     },
 
     startNewRound: function() {
+      if (this.roundNumber === 22) {
+        this.endGame("Mr. X Wins!");
+        return;
+      }
+
       this.$firestoreRefs.game.update({
         round: this.roundNumber + 1,
         playerOnTurn: "mr-x",
@@ -91,7 +101,14 @@ export default {
 
     selectNextPlayer: function() {
       // TODO: change this to proper selection
-      const currentPlayerNumber = this.currentPlayer.role.split("-").pop();
+      let currentPlayerNumber;
+
+      if (this.isMisterXTurn) {
+        currentPlayerNumber = 0;
+      } else {
+        currentPlayerNumber = this.currentPlayer.role.split("-").pop();
+      }
+
       const nextPlayerNumber = parseInt(currentPlayerNumber, 10) + 1;
       if (nextPlayerNumber > 5) {
         this.startNewRound();
@@ -103,21 +120,72 @@ export default {
       }
     },
 
+    endGame: function(result) {
+      this.result = result;
+
+      this.$firestoreRefs.game.update({
+        isInProgress: false,
+        result,
+      });
+    },
+
+    checkForGameEnd: function() {
+      const mrXLocation = this.mrX.currentLocation;
+      const isDetectiveOnSameLocation = this.detectives.find(
+        detective => detective.currentLocation === mrXLocation
+      );
+
+      if (isDetectiveOnSameLocation) {
+        return {
+          isGameOver: true,
+          result: "Detectives Win!",
+        };
+      }
+
+      return {
+        isGameOver: false,
+        result: null,
+      };
+    },
+
     handleSetLocation: function({ stationNumber, ticketType }) {
       if (!stationNumber) {
         return;
       }
       this.currentPlayer.tickets[ticketType] -= 1;
+      const currentLocation = parseInt(stationNumber, 10);
 
-      this.$firestoreRefs.detectives
-        .doc(this.currentPlayer.id)
-        .update({
-          currentLocation: parseInt(stationNumber, 10),
-          tickets: this.currentPlayer.tickets,
-        })
-        .then(() => {
-          this.selectNextPlayer();
+      if (this.isMisterXTurn) {
+        // update Mr-X object
+        this.currentPlayer.moves.push({
+          position: currentLocation,
+          ticket: ticketType,
         });
+        this.currentPlayer.currentLocation = currentLocation;
+
+        this.$firestoreRefs.game
+          .update({
+            "mr-x": Object.assign({}, { ...this.currentPlayer }),
+          })
+          .then(() => {
+            this.selectNextPlayer();
+          });
+      } else {
+        this.$firestoreRefs.detectives
+          .doc(this.currentPlayer.id)
+          .update({
+            currentLocation: parseInt(stationNumber, 10),
+            tickets: this.currentPlayer.tickets,
+          })
+          .then(() => {
+            const { isGameOver, result } = this.checkForGameEnd();
+            if (!isGameOver) {
+              this.selectNextPlayer();
+            } else {
+              this.endGame(result);
+            }
+          });
+      }
     },
   },
 };
@@ -157,10 +225,6 @@ body {
 .players {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-}
-
-.player {
-  border: 1px #ececec solid;
 }
 
 .mr-x {

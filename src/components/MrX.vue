@@ -2,8 +2,8 @@
   <div class="player" :class="{ 'current-player': isCurrentPlayer }">
     <div class="info">
       <div class="name-and-icon" @click="setPlayerTurn">
-        <BadgeIcon :role="this.data.role" />
-        <div class="name" :class="isCurrentPlayer ? this.data.role : ''">Detective</div>
+        <MrXIcon />
+        <div class="name" :class="isCurrentPlayer ? this.data.role : ''">Mr. X</div>
         <div class="location">{{ data.currentLocation }}</div>
       </div>
       <div class="tickets">
@@ -22,20 +22,17 @@
 </template>
 
 <script>
-import BadgeIcon from "./BadgeIcon";
 import TransportIcon from "./TransportIcon";
+import MrXIcon from "./MrXIcon";
 
 export default {
-  name: "Detective",
-  components: { BadgeIcon, TransportIcon },
+  name: "MrX",
+  components: { TransportIcon, MrXIcon },
   props: {
     data: Object,
     isCurrentPlayer: Boolean,
   },
   computed: {
-    detectiveNumber: function() {
-      return this.data.role.split("-").pop();
-    },
     transportTypes: function() {
       return Object.keys(this.data.tickets).sort();
     },
@@ -68,29 +65,14 @@ export default {
   align-items: center;
 }
 
+.name-and-icon > svg {
+  height: 3rem;
+  width: 3rem;
+}
+
 .name {
   font-size: 1.15em;
   margin-left: 1em;
-}
-
-.detective-1 {
-  color: hotpink;
-}
-
-.detective-2 {
-  color: coral;
-}
-
-.detective-3 {
-  color: aquamarine;
-}
-
-.detective-4 {
-  color: royalblue;
-}
-
-.detective-5 {
-  color: gold;
 }
 
 .location {
@@ -120,6 +102,11 @@ export default {
   align-items: center;
   font-size: 1.25em;
 }
+
+.black-icon {
+  width: 2rem;
+}
+
 .ticket-balance {
   margin-top: 0.25em;
 }
