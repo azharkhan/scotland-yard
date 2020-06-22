@@ -2,7 +2,10 @@
   <div id="app">
     <div id="nav">
       <router-link to="/">Home</router-link>|
-      <router-link :to="{ name: 'Game', params: { id: 'tcZwNAgeeZuJBzNl48l1'}}">Current Game</router-link>
+      <router-link
+        :to="{ name: 'Game', params: { id: 'tcZwNAgeeZuJBzNl48l1' } }"
+        >Current Game</router-link
+      >
     </div>
     <router-view />
   </div>
@@ -23,7 +26,9 @@ html,
 body {
   margin: 0;
   padding: 0;
-  font-family: Avenir, Helvetica, Arial, sans-serif;
+  --font-family-main: Halant, Avenir, Helvetica, sans-serif;
+  --font-family-secondary: Nunito Sans, Avenir, Helvetica, sans-serif;
+  font-family: var(--font-family-main);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color: #2c3e50;
