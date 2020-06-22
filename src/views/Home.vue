@@ -1,9 +1,12 @@
 <template>
   <div class="home">
     <div class="banner">
-      <div class="hero">The Muscateers!</div>
+      <div class="hero">
+        <h1>Play Scotland Yard!</h1>
+        <p>Made with love, by the Muscateers</p>
+      </div>
       <div class="options">
-        <div class="button" @click="createNewGame">Start Game</div>
+        <div class="button" @click="createNewGame">New Game</div>
         <div class="button">Join Game</div>
       </div>
     </div>
@@ -66,10 +69,11 @@ export default {
   height: calc(100vh - 10%);
 }
 .banner {
-  background-image: url("../assets/muscat-fort.jpg");
+  background-image: url("../assets/background-play.jpg");
   background-repeat: no-repeat;
   background-attachment: fixed;
   background-position: center center;
+  background-size: contain;
   height: 100%;
   width: 100%;
   display: flex;
@@ -78,8 +82,20 @@ export default {
   align-items: center;
 }
 .hero {
-  color: #f4f7f9;
-  font-size: 4rem;
+  background: rgba(255, 255, 255, 0.3);
+  padding: 2rem;
+  color: #364751;
+}
+
+.hero h1 {
+  font-size: 4.5rem;
+  font-family: var(--font-family-main);
+  font-weight: bold;
+}
+
+.hero p {
+  font-size: 1.25rem;
+  font-family: var(--font-family-secondary);
 }
 
 .options {
@@ -91,12 +107,13 @@ export default {
 
 .button {
   background: #2fa5dc;
+  font-family: var(--font-family-main);
   font-size: 1.25rem;
   color: #f4f7f9;
   font-weight: bold;
-  padding: 10px;
-  width: 150px;
-  height: 30px;
+  padding: 1rem;
+  width: 10rem;
+  height: 3rem;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -109,7 +126,7 @@ export default {
 @media only screen and (max-width: 767px) {
   /* mobile */
   .banner {
-    background-image: url("../assets/muscat-fort-small.jpg");
+    background-image: url("../assets/background-play.jpg");
   }
 
   .hero {
