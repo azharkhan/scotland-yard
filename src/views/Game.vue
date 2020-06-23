@@ -1,15 +1,30 @@
 <template>
   <div class="game">
-    <StatusBar :currentPlayer="currentPlayer" :round="roundNumber" :result="result" />
+    <StatusBar
+      :currentPlayer="currentPlayer"
+      :round="roundNumber"
+      :result="result"
+    />
     <Moves :moves="moves" />
-    <Map :detectives="detectives" :currentPlayer="currentPlayer" @setLocation="handleSetLocation" />
+    <Map
+      :detectives="detectives"
+      :currentPlayer="currentPlayer"
+      @setLocation="handleSetLocation"
+    />
     <div class="players">
-      <MrX v-if="mrX" :data="mrX" :isCurrentPlayer="isMisterXTurn" @setTurn="handleSetTurn" />
+      <MrX
+        v-if="mrX"
+        :data="mrX"
+        :isCurrentPlayer="isMisterXTurn"
+        @setTurn="handleSetTurn"
+      />
       <Detective
         v-for="(detective, index) in detectives"
         :key="detective.currentLocation || index"
         :data="detective"
-        :isCurrentPlayer="currentPlayer && currentPlayer.role === detective.role"
+        :isCurrentPlayer="
+          currentPlayer && currentPlayer.role === detective.role
+        "
         @setTurn="handleSetTurn"
       />
     </div>
@@ -27,6 +42,9 @@ import { db } from "../db";
 
 export default {
   name: "Game",
+  metaInfo: {
+    title: "Scotland Yard | Game",
+  },
   components: { Map, Detective, StatusBar, Moves, MrX },
   data() {
     return {

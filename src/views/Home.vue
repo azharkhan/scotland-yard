@@ -23,6 +23,9 @@ const allLocations = Array(200)
 
 export default {
   name: "Home",
+  metaInfo: {
+    title: "Scotland Yard | Muscateers",
+  },
   data() {
     return {
       gameProps: {
