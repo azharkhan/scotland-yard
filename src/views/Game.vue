@@ -178,6 +178,15 @@ export default {
             tickets: this.currentPlayer.tickets,
           })
           .then(() => {
+            // update Mr.X 's tickets
+            const mrX = Object.assign({}, { ...this.mrX });
+            mrX.tickets[ticketType] += 1;
+
+            this.$firestoreRefs.game.update({
+              "mr-x": Object.assign({}, { ...this.mrX }, { mrX }),
+            });
+          })
+          .then(() => {
             const { isGameOver, result } = this.checkForGameEnd();
             if (!isGameOver) {
               this.selectNextPlayer();

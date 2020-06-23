@@ -39,6 +39,7 @@ export default {
         taxi: 57,
         bus: 45,
         underground: 23,
+        black: 5,
       },
     };
   },
