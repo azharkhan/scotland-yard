@@ -15,7 +15,6 @@
 
 <script>
 import { db } from "@/db.js";
-import randomWords from "random-words";
 
 const allLocations = Array(200)
   .fill(1)
@@ -48,7 +47,10 @@ export default {
   },
   computed: {
     newGameId() {
-      return randomWords(3).join("-");
+      // generate random string: https://dev.to/oyetoket/fastest-way-to-generate-random-strings-in-javascript-2k5a
+      return Math.random()
+        .toString(20)
+        .substr(2, 6);
     },
     shuffledPositions() {
       const allLocationsCopy = this.allLocations.slice();
