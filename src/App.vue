@@ -2,18 +2,25 @@
   <div id="app">
     <div id="nav">
       <router-link to="/">Home</router-link>|
-      <router-link
-        :to="{ name: 'Game', params: { id: 'tcZwNAgeeZuJBzNl48l1' } }"
-        >Current Game</router-link
-      >
+      <router-link :to="{ name: 'Game', params: { id: 'tcZwNAgeeZuJBzNl48l1' } }">Current Game</router-link>
+      <User :user="state.user" v-if="state.user" />
     </div>
     <router-view />
   </div>
 </template>
 
 <script>
+import User from "@/components/User.vue";
+import { store } from "@/store.js";
+
 export default {
   name: "App",
+  components: { User },
+  data() {
+    return {
+      state: store.state,
+    };
+  },
 };
 </script>
 
