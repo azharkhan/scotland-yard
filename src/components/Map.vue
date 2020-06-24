@@ -30,6 +30,8 @@
 import stationCoords from "../assets/station-coordinates.json";
 import stations from "../assets/stations.json";
 
+import { store } from "@/store";
+
 export default {
   name: "Map",
   data() {
@@ -37,6 +39,7 @@ export default {
       stationCoords,
       stations,
       svgNS: "http://www.w3.org/2000/svg",
+      state: store.state,
     };
   },
   props: {
@@ -166,6 +169,17 @@ export default {
     },
     currentPlayer: {
       handler() {
+        // check if user has access to Mr X
+        const isMrXTurn = this.currentPlayer.role === "mr-x";
+        const loggedInUserIsMrX =
+          this.currentPlayer.user &&
+          this.state.user &&
+          this.state.user.email === this.currentPlayer.user;
+
+        // don't show Mr.X on the board if the logged-in player isn't controlling Mr. X
+        if (isMrXTurn && !loggedInUserIsMrX) {
+          return;
+        }
         this.selectStation(this.currentPlayer.currentLocation.toString());
       },
     },

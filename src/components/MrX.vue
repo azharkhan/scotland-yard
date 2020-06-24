@@ -4,7 +4,7 @@
       <div class="name-and-icon" @click="setPlayerTurn">
         <MrXIcon />
         <div class="name" :class="isCurrentPlayer ? this.data.role : ''">Mr. X</div>
-        <div class="location">{{ data.currentLocation }}</div>
+        <div class="location" v-if="hasAccess">{{ data.currentLocation }}</div>
       </div>
       <div class="tickets">
         <div
@@ -31,6 +31,7 @@ export default {
   props: {
     data: Object,
     isCurrentPlayer: Boolean,
+    hasAccess: Boolean,
   },
   computed: {
     transportTypes: function() {

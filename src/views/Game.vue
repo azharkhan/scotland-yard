@@ -1,22 +1,16 @@
 <template>
   <div class="game">
-    <StatusBar
-      :currentPlayer="currentPlayer"
-      :round="roundNumber"
-      :result="result"
-    />
+    {{ user }}
+    <StatusBar :currentPlayer="currentPlayer" :round="roundNumber" :result="result" />
     <Moves :moves="moves" />
-    <Map
-      :detectives="detectives"
-      :currentPlayer="currentPlayer"
-      @setLocation="handleSetLocation"
-    />
+    <Map :detectives="detectives" :currentPlayer="currentPlayer" @setLocation="handleSetLocation" />
     <div class="players">
       <MrX
         v-if="mrX"
         :data="mrX"
         :isCurrentPlayer="isMisterXTurn"
         @setTurn="handleSetTurn"
+        :hasAccess="isMrX"
       />
       <Detective
         v-for="(detective, index) in detectives"
@@ -39,6 +33,7 @@ import StatusBar from "../components/StatusBar.vue";
 import Moves from "../components/Moves.vue";
 
 import { db } from "../db";
+import { store } from "@/store";
 
 export default {
   name: "Game",
@@ -46,12 +41,16 @@ export default {
     title: "Scotland Yard | Game",
   },
   components: { Map, Detective, StatusBar, Moves, MrX },
+  props: {
+    user: Object,
+  },
   data() {
     return {
       name: "Mr. X",
       detectives: [],
       game: null,
       gameId: this.$route.params.id,
+      state: store.state,
     };
   },
   firestore() {
@@ -64,6 +63,14 @@ export default {
     };
   },
   computed: {
+    isMrX: function() {
+      const loggedInUserEmail = this.state.user && this.state.user.email;
+      return (
+        this.game &&
+        this.game["mr-x"] &&
+        this.game["mr-x"].user === loggedInUserEmail
+      );
+    },
     roundNumber: function() {
       return this.game && this.game.round;
     },
