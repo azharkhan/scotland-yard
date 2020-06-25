@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@beyonk/google-fonts-webpack-plugin": "^1.2.3",
+    "buefy": "^0.8.20",
     "core-js": "^3.6.5",
     "firebase": "^7.15.1",
     "vue": "^2.6.11",

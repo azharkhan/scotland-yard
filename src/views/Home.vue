@@ -1,5 +1,5 @@
 <template>
-  <div class="home">
+  <!-- <div class="home">
     <div class="banner">
       <div class="hero">
         <h1>Play Scotland Yard!</h1>
@@ -10,7 +10,18 @@
         <div class="button">Join Game</div>
       </div>
     </div>
-  </div>
+  </div> -->
+  <section class="hero is-fullheight-with-navbar">
+    <div class="hero-body banner">
+      <div class="container">
+        <h1 class="title">Play Scotland Yard</h1>
+        <h2 class="subtitle">Made with love, by the Muscateers</h2>
+        <b-button type="is-primary" :loading="loading" @click="createNewGame"
+          >New Game</b-button
+        >
+      </div>
+    </div>
+  </section>
 </template>
 
 <script>
@@ -27,6 +38,7 @@ export default {
   },
   data() {
     return {
+      loading: false,
       gameProps: {
         round: 1,
         playerOnTurn: "mr-x",
@@ -86,12 +98,14 @@ export default {
       return tickets;
     },
     createNewGame: async function() {
+      this.loading = true;
       await db
         .collection("games")
         .doc(this.newGameId)
         .set({ ...this.gameProps });
       await this.createDetectiveCollection();
       await this.addMrX();
+      this.loading = false;
       this.$router.push({ name: "Game", params: { id: this.newGameId } });
     },
     addMrX: async function() {
@@ -135,84 +149,20 @@ export default {
 </script>
 
 <style scoped>
-.home {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: calc(100vh - 10%);
-}
 .banner {
   background-image: url("../assets/background-play.jpg");
   background-repeat: no-repeat;
   background-attachment: fixed;
   background-position: center center;
-  background-size: contain;
-  height: 100%;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-}
-.hero {
-  background: rgba(255, 255, 255, 0.3);
-  padding: 2rem;
-  color: #364751;
-}
-
-.hero h1 {
-  font-size: 4.5rem;
-  font-family: var(--font-family-main);
-  font-weight: bold;
-}
-
-.hero p {
-  font-size: 1.25rem;
-  font-family: var(--font-family-secondary);
-}
-
-.options {
-  display: flex;
-  justify-content: space-around;
-  width: 50%;
-  margin-top: 30px;
-}
-
-.button {
-  background: #2fa5dc;
-  font-family: var(--font-family-main);
-  font-size: 1.25rem;
-  color: #f4f7f9;
-  font-weight: bold;
-  padding: 1rem;
-  width: 10rem;
-  height: 3rem;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.button:hover {
-  cursor: pointer;
+  background-size: cover;
 }
 
 @media only screen and (max-width: 767px) {
   /* mobile */
   .banner {
     background-image: url("../assets/background-play.jpg");
-  }
-
-  .hero {
-    font-size: 2rem;
-  }
-
-  .button {
-    font-size: 1rem;
-    margin-top: 1rem;
-  }
-
-  .options {
-    flex-direction: column;
+    background-size: cover;
+    background-position: center left;
   }
 }
 </style>
