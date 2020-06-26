@@ -2,19 +2,16 @@
   <div id="app">
     <b-navbar>
       <template slot="start">
-        <b-navbar-item tag="router-link" :to="{ path: '/' }"
-          >Home</b-navbar-item
-        >
+        <b-navbar-item tag="router-link" :to="{ path: '/' }">Home</b-navbar-item>
         <b-navbar-item
           tag="router-link"
           :to="{ name: 'Game', params: { id: 'tcZwNAgeeZuJBzNl48l1' } }"
-          >Current Game</b-navbar-item
-        >
+        >Current Game</b-navbar-item>
       </template>
       <template slot="end">
         <b-navbar-item tag="div" v-if="!state.user">
           <div class="buttons">
-            <a class="button is-light">Login</a>
+            <div class="button is-light" @click="loginWithGoogle">Login</div>
           </div>
         </b-navbar-item>
         <b-navbar-item tag="div" v-if="state.user">
@@ -36,6 +33,9 @@
 </template>
 
 <script>
+import * as firebase from "firebase/app";
+import "firebase/auth";
+
 import { store } from "@/store.js";
 
 export default {
@@ -44,6 +44,28 @@ export default {
     return {
       state: store.state,
     };
+  },
+  methods: {
+    loginWithGoogle() {
+      const provider = new firebase.auth.GoogleAuthProvider();
+      provider.addScope("profile");
+      provider.addScope("email");
+      firebase
+        .auth()
+        .signInWithPopup(provider)
+        .then(result => {
+          const user = {
+            name: result.user.displayName,
+            email: result.user.email,
+            image: result.user.photoURL,
+          };
+          store.setUser(user);
+        })
+        .catch(err => {
+          alert("sign-in was not successful");
+          console.log("google did a sad", err);
+        });
+    },
   },
 };
 </script>

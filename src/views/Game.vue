@@ -5,14 +5,13 @@
     <Moves :moves="moves" />
     <Map :detectives="detectives" :currentPlayer="currentPlayer" @setLocation="handleSetLocation" />
     <div class="players">
-      <MrX
-        v-if="mrX"
+      <Player
         :data="mrX"
         :isCurrentPlayer="isMisterXTurn"
         @setTurn="handleSetTurn"
         :hasAccess="isMrX"
       />
-      <Detective
+      <Player
         v-for="(detective, index) in detectives"
         :key="detective.currentLocation || index"
         :data="detective"
@@ -27,8 +26,7 @@
 
 <script>
 import Map from "../components/Map.vue";
-import Detective from "../components/Detective.vue";
-import MrX from "../components/MrX.vue";
+import Player from "../components/Player.vue";
 import StatusBar from "../components/StatusBar.vue";
 import Moves from "../components/Moves.vue";
 
@@ -40,7 +38,7 @@ export default {
   metaInfo: {
     title: "Scotland Yard | Game",
   },
-  components: { Map, Detective, StatusBar, Moves, MrX },
+  components: { Map, Player, StatusBar, Moves },
   props: {
     user: Object,
   },

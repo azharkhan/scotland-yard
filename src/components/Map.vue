@@ -167,6 +167,23 @@ export default {
         });
       },
     },
+    state: {
+      deep: true,
+      handler() {
+        // check if user has access to Mr X
+        const isMrXTurn = this.currentPlayer.role === "mr-x";
+        const loggedInUserIsMrX =
+          this.currentPlayer.user &&
+          this.state.user &&
+          this.state.user.email === this.currentPlayer.user;
+
+        // don't show Mr.X on the board if the logged-in player isn't controlling Mr. X
+        if (isMrXTurn && !loggedInUserIsMrX) {
+          return;
+        }
+        this.selectStation(this.currentPlayer.currentLocation.toString());
+      },
+    },
     currentPlayer: {
       handler() {
         // check if user has access to Mr X
