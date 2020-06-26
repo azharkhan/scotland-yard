@@ -1,26 +1,23 @@
 <template>
-  <div class="game">
-    {{ user }}
+  <div class="game container">
     <StatusBar :currentPlayer="currentPlayer" :round="roundNumber" :result="result" />
     <Moves :moves="moves" />
     <Map :detectives="detectives" :currentPlayer="currentPlayer" @setLocation="handleSetLocation" />
-    <div class="players">
-      <Player
-        :data="mrX"
-        :isCurrentPlayer="isMisterXTurn"
-        @setTurn="handleSetTurn"
-        :hasAccess="isMrX"
-      />
-      <Player
-        v-for="(detective, index) in detectives"
-        :key="detective.currentLocation || index"
-        :data="detective"
-        :isCurrentPlayer="
+    <Player
+      :data="mrX"
+      :isCurrentPlayer="isMisterXTurn"
+      @setTurn="handleSetTurn"
+      :hasAccess="isMrX"
+    />
+    <Player
+      v-for="(detective, index) in detectives"
+      :key="detective.currentLocation || index"
+      :data="detective"
+      :isCurrentPlayer="
           currentPlayer && currentPlayer.role === detective.role
         "
-        @setTurn="handleSetTurn"
-      />
-    </div>
+      @setTurn="handleSetTurn"
+    />
   </div>
 </template>
 

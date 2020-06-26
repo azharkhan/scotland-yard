@@ -91,23 +91,89 @@ export default {
       svg.appendChild(circle);
     },
 
-    validateMove: function(ticketType) {
-      return this.currentPlayer.tickets[ticketType] > 0;
+    chooseTicketsAndValidate: async function(station) {
+      // find all possible modes of transport
+      const currentLocation = this.currentPlayer.currentLocation;
+      const nearbyStations = this.stations[currentLocation];
+      const allTransportTypes = Object.keys(nearbyStations);
+
+      // go through all available transport types
+      // give players a choice if multiple ticket choices are available
+      const accessibleTransports = allTransportTypes.reduce(
+        (accessible, type) => {
+          const found = stations[currentLocation][type].find(
+            stop => stop === station.number.toString()
+          );
+          if (found && this.currentPlayer.tickets[type] > 0) {
+            accessible.push(type);
+          }
+          return accessible;
+        },
+        []
+      );
+
+      return new Promise((resolve, reject) => {
+        if (accessibleTransports.length > 1) {
+          this.$buefy.dialog.prompt({
+            message: `Please choose between the following tickets: ${accessibleTransports.join(
+              ", "
+            )}`,
+            inputAttrs: {
+              type: "text",
+              placeholder: `Either of: ${accessibleTransports.join(" or ")}`,
+              value: `${accessibleTransports[0]}`,
+            },
+            confirmText: "Spend",
+            trapFocus: true,
+            closeOnConfirm: false,
+            onConfirm: (value, { close }) => {
+              if (accessibleTransports.includes(value)) {
+                close();
+                return resolve(value);
+              } else {
+                this.$buefy.toast.open(`That's not a valid ticket :(`);
+              }
+            },
+          });
+        } else if (accessibleTransports.length === 1) {
+          return resolve(accessibleTransports.slice(0));
+        } else {
+          return reject();
+        }
+      });
     },
 
-    setCurrentPlayerLocation: function(station) {
-      const isMoveAllowed = this.validateMove(station.type);
-      if (!isMoveAllowed) {
-        alert(`You do not have enough ${station.type} tickets`);
-        return;
+    setCurrentPlayerLocation: async function(station) {
+      let ticketType;
+
+      if (
+        this.currentPlayer.role === "mr-x" &&
+        this.currentPlayer.tickets.black > 0
+      ) {
+        try {
+          ticketType = await new Promise((resolve, reject) => {
+            this.$buefy.dialog.confirm({
+              message: `Would you like to use a black ticket?`,
+              onCancel: () => reject(),
+              onConfirm: () => resolve("black"),
+            });
+          });
+        } catch {
+          ticketType = null;
+        }
       }
-      const stationNumber = station.number;
-      const acceptMove = confirm("Are you sure?");
-      if (isMoveAllowed && acceptMove) {
-        this.$emit("setLocation", {
-          stationNumber: stationNumber,
-          ticketType: station.type,
-        });
+
+      if (!ticketType) {
+        try {
+          ticketType = await this.chooseTicketsAndValidate(station);
+          this.$emit("setLocation", {
+            stationNumber: station.number,
+            ticketType,
+          });
+        } catch (err) {
+          alert("You do not have enough tickets for this move.");
+          return;
+        }
       }
     },
 
@@ -142,6 +208,20 @@ export default {
         }
       }
     },
+    checkIfMrXVisible() {
+      // check if user has access to Mr X
+      const isMrXTurn = this.currentPlayer.role === "mr-x";
+      const loggedInUserIsMrX =
+        this.currentPlayer.user &&
+        this.state.user &&
+        this.state.user.email === this.currentPlayer.user;
+
+      // don't show Mr.X on the board if the logged-in player isn't controlling Mr. X
+      if (isMrXTurn && !loggedInUserIsMrX) {
+        return;
+      }
+      this.selectStation(this.currentPlayer.currentLocation.toString());
+    },
   },
   watch: {
     // initially the value is unavailable, we need to watch for changes to plot
@@ -170,34 +250,12 @@ export default {
     state: {
       deep: true,
       handler() {
-        // check if user has access to Mr X
-        const isMrXTurn = this.currentPlayer.role === "mr-x";
-        const loggedInUserIsMrX =
-          this.currentPlayer.user &&
-          this.state.user &&
-          this.state.user.email === this.currentPlayer.user;
-
-        // don't show Mr.X on the board if the logged-in player isn't controlling Mr. X
-        if (isMrXTurn && !loggedInUserIsMrX) {
-          return;
-        }
-        this.selectStation(this.currentPlayer.currentLocation.toString());
+        this.checkIfMrXVisible();
       },
     },
     currentPlayer: {
       handler() {
-        // check if user has access to Mr X
-        const isMrXTurn = this.currentPlayer.role === "mr-x";
-        const loggedInUserIsMrX =
-          this.currentPlayer.user &&
-          this.state.user &&
-          this.state.user.email === this.currentPlayer.user;
-
-        // don't show Mr.X on the board if the logged-in player isn't controlling Mr. X
-        if (isMrXTurn && !loggedInUserIsMrX) {
-          return;
-        }
-        this.selectStation(this.currentPlayer.currentLocation.toString());
+        this.checkIfMrXVisible();
       },
     },
   },

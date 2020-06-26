@@ -8,7 +8,7 @@
         >{{ data.currentLocation }}</div>
       </div>
       <div class="media-content">
-        <div class="content">
+        <div class="content" @click="setPlayerTurn">
           <div
             class="heading"
             v-if="data.role !== 'mr-x'"
