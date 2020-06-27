@@ -121,7 +121,7 @@ export default {
       return await db
         .collection("games")
         .doc(this.newGameId)
-        .update({ "mr-x": mrX });
+        .update({ "mr-x": { ...mrX } });
     },
     createDetectiveCollection: async function() {
       const detectivePromises = Array(5)
