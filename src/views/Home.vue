@@ -10,15 +10,13 @@
         <div class="button">Join Game</div>
       </div>
     </div>
-  </div> -->
+  </div>-->
   <section class="hero is-fullheight-with-navbar">
     <div class="hero-body banner">
       <div class="container">
         <h1 class="title">Play Scotland Yard</h1>
         <h2 class="subtitle">Made with love, by the Muscateers</h2>
-        <b-button type="is-primary" :loading="loading" @click="createNewGame"
-          >New Game</b-button
-        >
+        <b-button type="is-primary" :loading="loading" @click="createNewGame">New Game</b-button>
       </div>
     </div>
   </section>
@@ -116,6 +114,8 @@ export default {
         tickets: this.totalTickets,
         currentLocation: randomPosition,
         moves: [{ position: randomPosition }],
+        secondMove: false,
+        user: null,
       };
 
       return await db
