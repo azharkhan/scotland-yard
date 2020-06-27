@@ -1,6 +1,7 @@
 <template>
   <div class="game container">
     <StatusBar :currentPlayer="currentPlayer" :round="roundNumber" :result="result" />
+    <b-button @click="chooseRoles">Choose Roles</b-button>
     <Moves :moves="moves" />
     <Map :detectives="detectives" :currentPlayer="currentPlayer" @setLocation="handleSetLocation" />
     <Player
@@ -26,6 +27,7 @@ import Map from "../components/Map.vue";
 import Player from "../components/Player.vue";
 import StatusBar from "../components/StatusBar.vue";
 import Moves from "../components/Moves.vue";
+import ChooseRole from "../components/ChooseRole.vue";
 
 import { db } from "../db";
 import { store } from "@/store";
@@ -36,9 +38,6 @@ export default {
     title: "Scotland Yard | Game",
   },
   components: { Map, Player, StatusBar, Moves },
-  props: {
-    user: Object,
-  },
   data() {
     return {
       name: "Mr. X",
@@ -46,6 +45,8 @@ export default {
       game: null,
       gameId: this.$route.params.id,
       state: store.state,
+      chooseRole: ChooseRole,
+      isChoosingRole: false,
     };
   },
   firestore() {
@@ -71,6 +72,9 @@ export default {
     },
     mrX: function() {
       return this.game && this.game["mr-x"];
+    },
+    mrXPlayer: function() {
+      return this.game && this.game["mr-x"] && this.game["mr-x"].user;
     },
     moves: function() {
       if (this.mrX) {
@@ -105,6 +109,36 @@ export default {
   methods: {
     handleSetTurn: function(role) {
       this.$firestoreRefs.game.update({ playerOnTurn: role });
+    },
+
+    chooseRoles: function() {
+      this.$buefy.modal.open({
+        parent: this,
+        component: this.chooseRole,
+        hasModalCard: true,
+        props: {
+          user: this.state.user,
+          isMrX: this.isMrX,
+          mrXPlayer: this.mrXPlayer,
+        },
+        events: {
+          setRoles: value => {
+            if (value === "mr-x" && this.state.user) {
+              this.currentPlayer.user = this.state.user.email;
+              this.$firestoreRefs.game
+                .update({
+                  "mr-x": Object.assign({}, { ...this.currentPlayer }),
+                })
+                .then(() => {
+                  this.$buefy.toast.open({
+                    message: `${this.state.user.name} is Mr. X!`,
+                    type: "is-success",
+                  });
+                });
+            }
+          },
+        },
+      });
     },
 
     startNewRound: function() {
