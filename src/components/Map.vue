@@ -174,6 +174,11 @@ export default {
           alert("You do not have enough tickets for this move.");
           return;
         }
+      } else {
+        this.$emit("setLocation", {
+          stationNumber: station.number,
+          ticketType,
+        });
       }
     },
 

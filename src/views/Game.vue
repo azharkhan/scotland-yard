@@ -182,13 +182,34 @@ export default {
           ticket: ticketType,
         });
         this.currentPlayer.currentLocation = currentLocation;
+        const isSecondMove = this.currentPlayer.secondMove;
+        this.currentPlayer.secondMove = false;
 
         this.$firestoreRefs.game
           .update({
             "mr-x": Object.assign({}, { ...this.currentPlayer }),
           })
           .then(() => {
-            this.selectNextPlayer();
+            if (this.currentPlayer.tickets["2x"] > 0 && !isSecondMove) {
+              this.$buefy.dialog.confirm({
+                message:
+                  'Would you like to spend a "2x" and make another move?',
+                onConfirm: () => {
+                  this.currentPlayer.tickets["2x"] -= 1;
+                  this.currentPlayer.secondMove = true;
+                  this.$firestoreRefs.game
+                    .update({
+                      "mr-x": Object.assign({}, { ...this.currentPlayer }),
+                    })
+                    .then(() => {
+                      this.$firestoreRefs.game.update({ playerOnTurn: "mr-x" });
+                    });
+                },
+                onCancel: () => this.selectNextPlayer(),
+              });
+            } else {
+              this.selectNextPlayer();
+            }
           });
       } else {
         this.$firestoreRefs.detectives
