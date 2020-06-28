@@ -52,6 +52,7 @@ export default {
         bus: 45,
         underground: 23,
         black: 5,
+        "2x": 2,
       },
     };
   },
