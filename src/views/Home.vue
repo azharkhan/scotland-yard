@@ -1,16 +1,4 @@
 <template>
-  <!-- <div class="home">
-    <div class="banner">
-      <div class="hero">
-        <h1>Play Scotland Yard!</h1>
-        <p>Made with love, by the Muscateers</p>
-      </div>
-      <div class="options">
-        <div class="button" @click="createNewGame">New Game</div>
-        <div class="button">Join Game</div>
-      </div>
-    </div>
-  </div>-->
   <section class="hero is-fullheight-with-navbar">
     <div class="hero-body banner">
       <div class="container">
@@ -42,9 +30,6 @@ export default {
         playerOnTurn: "mr-x",
         isInProgress: true,
         result: "",
-        "mr-x": {
-          role: "mr-x",
-        },
       },
       allLocations,
       totalTickets: {
@@ -98,15 +83,25 @@ export default {
     },
     createNewGame: async function() {
       this.loading = true;
-      await db
+
+      // create game document
+      await this.createGameDoc();
+      // create players
+      await this.createPlayersCollection();
+      await this.addMrX();
+
+      this.loading = false;
+      // navigate to game
+      this.$router.push({ name: "Game", params: { id: this.newGameId } });
+    },
+
+    createGameDoc: async function() {
+      return await db
         .collection("games")
         .doc(this.newGameId)
         .set({ ...this.gameProps });
-      await this.createDetectiveCollection();
-      await this.addMrX();
-      this.loading = false;
-      this.$router.push({ name: "Game", params: { id: this.newGameId } });
     },
+
     addMrX: async function() {
       const randomPosition = this.getRandomPosition();
 
@@ -122,9 +117,12 @@ export default {
       return await db
         .collection("games")
         .doc(this.newGameId)
-        .update({ "mr-x": { ...mrX } });
+        .collection("players")
+        .doc()
+        .set({ ...mrX });
     },
-    createDetectiveCollection: async function() {
+
+    createPlayersCollection: async function() {
       const detectivePromises = Array(5)
         .fill(1)
         .map((num, index) => {
@@ -134,12 +132,13 @@ export default {
           return db
             .collection("games")
             .doc(this.newGameId)
-            .collection("detectives")
+            .collection("players")
             .doc()
             .set({
               role: `detective-${index + 1}`,
               currentLocation: position,
               tickets,
+              user: null,
             });
         });
 

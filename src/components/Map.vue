@@ -136,7 +136,7 @@ export default {
             },
           });
         } else if (accessibleTransports.length === 1) {
-          return resolve(accessibleTransports.slice(0));
+          return resolve(accessibleTransports[0]);
         } else {
           return reject();
         }
@@ -219,7 +219,8 @@ export default {
       const loggedInUserIsMrX =
         this.currentPlayer.user &&
         this.state.user &&
-        this.state.user.email === this.currentPlayer.user;
+        this.state.user.uid &&
+        this.state.user.uid === this.currentPlayer.user;
 
       // don't show Mr.X on the board if the logged-in player isn't controlling Mr. X
       if (isMrXTurn && !loggedInUserIsMrX) {
@@ -279,10 +280,36 @@ export default {
   stroke-width: 3;
 }
 
+.station {
+  stroke: black;
+  fill: transparent;
+}
+
+@keyframes circle--selected {
+  0% {
+    stroke-width: 3;
+    fill-opacity: 1;
+  }
+
+  50% {
+    stroke-width: 1;
+    fill-opacity: 0.1;
+  }
+
+  100% {
+    stroke-width: 3;
+    fill-opacity: 1;
+  }
+}
+
 .selected {
   stroke: magenta;
-  fill: none;
+  fill: magenta;
   stroke-width: 3;
+  animation-duration: 1s;
+  animation-iteration-count: infinite;
+  animation-name: circle--selected;
+  animation-timing-function: ease-in-out;
 }
 
 .location {
@@ -291,11 +318,6 @@ export default {
 
 .transportation {
   color: #333;
-}
-
-.station {
-  stroke: black;
-  fill: transparent;
 }
 
 .available {

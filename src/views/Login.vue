@@ -40,6 +40,7 @@ export default {
             name: result.user.displayName,
             email: result.user.email,
             image: result.user.photoURL,
+            uid: result.user.uid,
           };
           store.setUser(user);
         })
