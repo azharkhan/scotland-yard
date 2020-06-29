@@ -239,7 +239,7 @@ export default {
             }
           });
       } else {
-        this.$firestoreRefs.detectives
+        this.$firestoreRefs.players
           .doc(this.currentPlayer.id)
           .update({
             currentLocation: parseInt(stationNumber, 10),
@@ -250,8 +250,8 @@ export default {
             const mrX = Object.assign({}, { ...this.mrX });
             mrX.tickets[ticketType] += 1;
 
-            this.$firestoreRefs.game.update({
-              "mr-x": Object.assign({}, { ...this.mrX }, { mrX }),
+            this.$firestoreRefs.players.doc(this.mrX.id).set({
+              ...this.mrX,
             });
           })
           .then(() => {
