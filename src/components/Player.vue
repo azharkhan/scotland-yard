@@ -1,5 +1,5 @@
 <template>
-  <div class="box">
+  <div class="box" v-if="data && data.role">
     <div class="media">
       <div class="media-left">
         <div
@@ -49,7 +49,7 @@ import MrXIcon from "./MrXIcon";
 import TransportIcon from "./TransportIcon";
 
 export default {
-  name: "Detective",
+  name: "Player",
   components: { BadgeIcon, TransportIcon, MrXIcon },
   props: {
     data: Object,
@@ -58,7 +58,12 @@ export default {
   },
   computed: {
     detectiveNumber: function() {
-      return this.data.role.split("-").pop();
+      return (
+        this.data &&
+        this.data.role &&
+        this.data.role !== "mr-x" &&
+        this.data.role.split("-").pop()
+      );
     },
     transportTypes: function() {
       return Object.keys(this.data.tickets).sort();

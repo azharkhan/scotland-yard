@@ -6,7 +6,7 @@
     <Map :detectives="detectives" :currentPlayer="currentPlayer" @setLocation="handleSetLocation" />
     <Player
       :data="mrX"
-      :isCurrentPlayer="isMisterXTurn"
+      :isCurrentPlayer="currentPlayer && currentPlayer.role === 'mr-x'"
       @setTurn="handleSetTurn"
       :hasAccess="isMrX"
     />
@@ -41,7 +41,7 @@ export default {
   data() {
     return {
       name: "Mr. X",
-      detectives: [],
+      players: [],
       game: null,
       gameId: this.$route.params.id,
       state: store.state,
@@ -51,30 +51,26 @@ export default {
   },
   firestore() {
     return {
-      detectives: db
+      players: db
         .collection("games")
         .doc(this.gameId)
-        .collection("detectives"),
+        .collection("players"),
       game: db.collection("games").doc(this.gameId),
     };
   },
   computed: {
     isMrX: function() {
-      const loggedInUserEmail = this.state.user && this.state.user.email;
-      return (
-        this.game &&
-        this.game["mr-x"] &&
-        this.game["mr-x"].user === loggedInUserEmail
-      );
+      const userId = this.state.user && this.state.user.uid;
+      return userId && this.mrX && this.mrX.user === userId;
+    },
+    detectives: function() {
+      return this.players.filter(player => player.role !== "mr-x");
     },
     roundNumber: function() {
       return this.game && this.game.round;
     },
     mrX: function() {
-      return this.game && this.game["mr-x"];
-    },
-    mrXPlayer: function() {
-      return this.game && this.game["mr-x"] && this.game["mr-x"].user;
+      return this.players.find(player => player.role === "mr-x");
     },
     moves: function() {
       if (this.mrX) {
@@ -95,15 +91,10 @@ export default {
       if (!this.playerOnTurn) {
         return null;
       }
-      if (this.playerOnTurn !== "mr-x") {
-        return (
-          this.detectives.length &&
-          this.detectives.find(
-            detective => detective.role === this.playerOnTurn
-          )
-        );
-      }
-      return this.mrX;
+      return (
+        this.players.length &&
+        this.players.find(player => player.role === this.playerOnTurn)
+      );
     },
   },
   methods: {
@@ -124,10 +115,10 @@ export default {
         events: {
           setRoles: value => {
             if (value === "mr-x" && this.state.user) {
-              this.currentPlayer.user = this.state.user.email;
-              this.$firestoreRefs.game
+              this.$firestoreRefs.players
+                .doc(this.currentPlayer.id)
                 .update({
-                  "mr-x": Object.assign({}, { ...this.currentPlayer }),
+                  user: this.state.user.uid,
                 })
                 .then(() => {
                   this.$buefy.toast.open({
@@ -219,9 +210,10 @@ export default {
         const isSecondMove = this.currentPlayer.secondMove;
         this.currentPlayer.secondMove = false;
 
-        this.$firestoreRefs.game
-          .update({
-            "mr-x": Object.assign({}, { ...this.currentPlayer }),
+        this.$firestoreRefs.players
+          .doc(this.currentPlayer.id)
+          .set({
+            ...this.currentPlayer,
           })
           .then(() => {
             if (this.currentPlayer.tickets["2x"] > 0 && !isSecondMove) {
@@ -231,9 +223,10 @@ export default {
                 onConfirm: () => {
                   this.currentPlayer.tickets["2x"] -= 1;
                   this.currentPlayer.secondMove = true;
-                  this.$firestoreRefs.game
-                    .update({
-                      "mr-x": Object.assign({}, { ...this.currentPlayer }),
+                  this.$firestoreRefs.players
+                    .doc(this.currentPlayer.id)
+                    .set({
+                      ...this.currentPlayer,
                     })
                     .then(() => {
                       this.$firestoreRefs.game.update({ playerOnTurn: "mr-x" });
