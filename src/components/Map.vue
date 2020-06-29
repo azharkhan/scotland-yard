@@ -136,7 +136,7 @@ export default {
             },
           });
         } else if (accessibleTransports.length === 1) {
-          return resolve(accessibleTransports.slice(0));
+          return resolve(accessibleTransports[0]);
         } else {
           return reject();
         }
