@@ -119,7 +119,7 @@ export default {
         .doc(this.newGameId)
         .collection("players")
         .doc()
-        .set({ "mr-x": { ...mrX } });
+        .set({ ...mrX });
     },
 
     createPlayersCollection: async function() {
