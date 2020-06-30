@@ -1,43 +1,22 @@
 <template>
-  <div class="box" v-if="data && data.role">
-    <div class="media">
-      <div class="media-left">
-        <div
-          class="title location"
+  <div class="player">
+    <div class="icon-and-location" @click="setPlayerTurn">
+      <figure class="image is-32x32">
+        <BadgeIcon :role="data.role" v-if="data.role !== 'mr-x'" />
+        <MrXIcon class="mr-x-icon" v-if="data.role === 'mr-x'" />
+      </figure>
+      <div class="location">
+        <span
           v-if="data.role === 'mr-x' && hasAccess || data.role !== 'mr-x'"
-        >{{ data.currentLocation }}</div>
+        >{{ data.currentLocation }}</span>
       </div>
-      <div class="media-content">
-        <div class="content" @click="setPlayerTurn">
-          <div
-            class="heading"
-            v-if="data.role !== 'mr-x'"
-            :class="isCurrentPlayer ? data.role : ''"
-          >Detective</div>
-          <div
-            class="heading"
-            v-if="data.role === 'mr-x'"
-            :class="isCurrentPlayer ? data.role : ''"
-          >Mr. X</div>
-        </div>
-        <div class="level">
-          <div
-            class="level-item has-text-centered"
-            v-for="transportType in transportTypes"
-            :key="transportType"
-          >
-            <div class="content">
-              <TransportIcon :type="transportType" class="transport-icon" />
-              <p class="tickets">{{ data.tickets[transportType] }}</p>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="media-right">
-        <figure class="image is-64x64 has-text-right">
-          <BadgeIcon :role="data.role" v-if="data.role !== 'mr-x'" />
-          <MrXIcon class="mr-x-icon" v-if="data.role === 'mr-x'" />
-        </figure>
+    </div>
+    <!-- used to show Mr. X's moves -->
+    <slot></slot>
+    <div class="tickets">
+      <div class="transportation" v-for="transportType in transportTypes" :key="transportType">
+        <p class="ticket-balance">{{ data.tickets[transportType] }}</p>
+        <TransportIcon :type="transportType" class="transport-icon" />
       </div>
     </div>
   </div>
@@ -45,8 +24,8 @@
 
 <script>
 import BadgeIcon from "./BadgeIcon";
-import MrXIcon from "./MrXIcon";
 import TransportIcon from "./TransportIcon";
+import MrXIcon from "./MrXIcon";
 
 export default {
   name: "Player",
@@ -58,12 +37,7 @@ export default {
   },
   computed: {
     detectiveNumber: function() {
-      return (
-        this.data &&
-        this.data.role &&
-        this.data.role !== "mr-x" &&
-        this.data.role.split("-").pop()
-      );
+      return this.data && this.data.role && this.data.role.split("-").pop();
     },
     transportTypes: function() {
       return Object.keys(this.data.tickets).sort();
@@ -82,29 +56,40 @@ export default {
 .player {
   padding: 0.5em;
   border: 1px #ececec solid;
+  display: flex;
+  flex-direction: column;
 }
 
 .current-player {
   border: 2px solid #333;
 }
 
-.name-and-icon:hover {
+.icon-and-location:hover {
   cursor: pointer;
 }
 
-.name-and-icon {
+.icon-and-location {
   display: flex;
-  align-items: center;
 }
 
 .transport-icon {
-  width: 2rem;
-  height: 2rem;
+  width: 1rem;
+  height: 1rem;
 }
 
-.mr-x-icon {
-  width: 3rem;
-  height: 3rem;
+.ticket-balance:after {
+  content: "\2715";
+  font-size: 0.75rem;
+  padding: 0.25rem;
+}
+
+.identity {
+  margin: auto 0;
+}
+
+figure > svg {
+  max-height: 100%;
+  max-width: 100%;
 }
 
 .name {
@@ -136,22 +121,29 @@ export default {
   border: 1px solid #ebebeb;
   border-radius: 50%;
   font-weight: bold;
-  width: 2.5em;
-  height: 2.5em;
+  width: 3rem;
+  height: 3rem;
   display: flex;
   align-items: center;
   justify-content: center;
+  margin: auto;
+  margin-right: 0;
+  font-size: 1.5rem;
 }
 
 .tickets {
+  display: flex;
+  align-items: center;
   font-size: 1.25em;
+  justify-content: space-between;
 }
 
 .transportation {
   display: flex;
-  flex-direction: column;
-  justify-content: center;
   align-items: center;
-  font-size: 1.25em;
+}
+
+.mr-x .tickets {
+  margin-top: 1rem;
 }
 </style>

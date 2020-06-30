@@ -2,23 +2,28 @@
   <div class="game container">
     <StatusBar :currentPlayer="currentPlayer" :round="roundNumber" :result="result" />
     <b-button @click="chooseRoles">Choose Roles</b-button>
-    <Moves :moves="moves" />
-    <Map :detectives="detectives" :currentPlayer="currentPlayer" @setLocation="handleSetLocation" />
-    <Player
-      :data="mrX"
-      :isCurrentPlayer="currentPlayer && currentPlayer.role === 'mr-x'"
-      @setTurn="handleSetTurn"
-      :hasAccess="isMrX"
-    />
-    <Player
-      v-for="(detective, index) in detectives"
-      :key="detective.currentLocation || index"
-      :data="detective"
-      :isCurrentPlayer="
+    <div class="mr-x">
+      <Player
+        :data="mrX"
+        :isCurrentPlayer="currentPlayer && currentPlayer.role === 'mr-x'"
+        @setTurn="handleSetTurn"
+        :hasAccess="isMrX"
+      >
+        <Moves :moves="moves" />
+      </Player>
+    </div>
+    <div class="detectives">
+      <Player
+        v-for="(detective, index) in detectives"
+        :key="detective.currentLocation || index"
+        :data="detective"
+        :isCurrentPlayer="
           currentPlayer && currentPlayer.role === detective.role
         "
-      @setTurn="handleSetTurn"
-    />
+        @setTurn="handleSetTurn"
+      />
+    </div>
+    <Map :detectives="detectives" :currentPlayer="currentPlayer" @setLocation="handleSetLocation" />
   </div>
 </template>
 
@@ -299,7 +304,7 @@ body {
   height: 100vh;
 }
 
-.players {
+.detectives {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
 }

@@ -42,8 +42,7 @@ export default {
 <style scoped>
 .move-list {
   display: grid;
-  grid-template-rows: repeat(4, 1fr);
-  grid-template-columns: repeat(6, 1fr);
+  grid-template-columns: repeat(8, 1fr);
 }
 
 .revealed-location {
@@ -68,18 +67,18 @@ export default {
 
 .move-number {
   display: flex;
-  font-size: 1.5em;
-  width: 2em;
-  height: 2em;
+  font-size: 1.25rem;
+  width: 2.5rem;
+  height: 2.5rem;
   justify-content: center;
   align-items: center;
 }
 
 .type {
-  margin-left: 1em;
+  margin-left: 1rem;
 }
 
 .type > svg {
-  width: 2em;
+  width: 2rem;
 }
 </style>
