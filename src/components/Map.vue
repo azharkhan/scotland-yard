@@ -8,7 +8,10 @@
     >
       <circle
         v-for="station in stationCoords"
-        :class="[{ selected: station.selected, available: station.available }, station.available ? station.type : '']"
+        :class="[
+          { selected: station.selected, available: station.available },
+          station.available ? station.type : '',
+        ]"
         class="station"
         :key="station.number"
         :ref="station.number"
@@ -19,7 +22,7 @@
         fill="#F9F9F9"
         fill-opacity="0.1"
         stroke="#3F3F3F"
-        stroke-width="0.75"
+        stroke-width=".75"
         @click="station.available ? setCurrentPlayerLocation(station) : null"
       />
     </svg>
@@ -29,6 +32,7 @@
 <script>
 import stationCoords from "../assets/station-coordinates.json";
 import stations from "../assets/stations.json";
+import { gsap } from "gsap";
 
 import { store } from "@/store";
 
@@ -58,7 +62,14 @@ export default {
       // remove any existing selected stations
       this.stationCoords
         .filter(station => station.selected)
-        .forEach(station => (station.selected = false));
+        .forEach(station => {
+          // clear animations
+          const stationRef = this.$refs[station.number][0];
+          gsap.killTweensOf(stationRef);
+          station.selected = false;
+          // override any element styling that was added
+          stationRef.removeAttribute("style");
+        });
     },
 
     clearAvailableRoutes: function() {
@@ -189,7 +200,19 @@ export default {
       const matchingStation = this.stationCoords.find(
         station => station.number === stationNumber
       );
+
       matchingStation.selected = true;
+
+      const timeline = gsap.timeline({ repeat: -1, yoyo: true });
+      const station = this.$refs[stationNumber][0];
+      timeline.to(station, {
+        duration: 1,
+        strokeWidth: 1,
+        attr: {
+          r: 25,
+        },
+        ease: "power2.inOut",
+      });
 
       this.showNearbyStations(matchingStation);
     },
@@ -285,31 +308,9 @@ export default {
   fill: transparent;
 }
 
-@keyframes circle--selected {
-  0% {
-    stroke-width: 3;
-    fill-opacity: 1;
-  }
-
-  50% {
-    stroke-width: 1;
-    fill-opacity: 0.1;
-  }
-
-  100% {
-    stroke-width: 3;
-    fill-opacity: 1;
-  }
-}
-
 .selected {
-  stroke: magenta;
-  fill: magenta;
+  stroke: darkslategray;
   stroke-width: 3;
-  animation-duration: 1s;
-  animation-iteration-count: infinite;
-  animation-name: circle--selected;
-  animation-timing-function: ease-in-out;
 }
 
 .location {

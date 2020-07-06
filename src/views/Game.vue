@@ -1,6 +1,10 @@
 <template>
   <div class="game container">
-    <StatusBar :currentPlayer="currentPlayer" :round="roundNumber" :result="result" />
+    <StatusBar
+      :currentPlayer="currentPlayer"
+      :round="roundNumber"
+      :result="result"
+    />
     <b-button @click="chooseRoles">Choose Roles</b-button>
     <div class="mr-x">
       <Player
@@ -15,7 +19,7 @@
     <div class="detectives">
       <Player
         v-for="(detective, index) in detectives"
-        :key="detective.currentLocation || index"
+        :key="index"
         :data="detective"
         :isCurrentPlayer="
           currentPlayer && currentPlayer.role === detective.role
@@ -23,7 +27,11 @@
         @setTurn="handleSetTurn"
       />
     </div>
-    <Map :detectives="detectives" :currentPlayer="currentPlayer" @setLocation="handleSetLocation" />
+    <Map
+      :detectives="detectives"
+      :currentPlayer="currentPlayer"
+      @setLocation="handleSetLocation"
+    />
   </div>
 </template>
 
