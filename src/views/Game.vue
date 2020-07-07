@@ -1,10 +1,6 @@
 <template>
   <div class="game container">
-    <StatusBar
-      :currentPlayer="currentPlayer"
-      :round="roundNumber"
-      :result="result"
-    />
+    <StatusBar :currentPlayer="currentPlayer" :round="roundNumber" :result="result" />
     <b-button @click="chooseRoles">Choose Roles</b-button>
     <div class="mr-x">
       <Player
@@ -27,11 +23,7 @@
         @setTurn="handleSetTurn"
       />
     </div>
-    <Map
-      :detectives="detectives"
-      :currentPlayer="currentPlayer"
-      @setLocation="handleSetLocation"
-    />
+    <Map :detectives="detectives" :currentPlayer="currentPlayer" @setLocation="handleSetLocation" />
   </div>
 </template>
 
@@ -77,7 +69,15 @@ export default {
       return userId && this.mrX && this.mrX.user === userId;
     },
     detectives: function() {
-      return this.players.filter(player => player.role !== "mr-x");
+      return (
+        this.players
+          .filter(player => player.role !== "mr-x")
+          // sort detectives by role
+          .sort((playerA, playerB) => {
+            if (playerA.role < playerB.role) return -1;
+            return 1;
+          })
+      );
     },
     roundNumber: function() {
       return this.game && this.game.round;
