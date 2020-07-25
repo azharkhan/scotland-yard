@@ -23,7 +23,13 @@
         @setTurn="handleSetTurn"
       />
     </div>
-    <Map :detectives="detectives" :currentPlayer="currentPlayer" @setLocation="handleSetLocation" />
+    <Map
+      :detectives="detectives"
+      :currentPlayer="currentPlayer"
+      @setLocation="handleSetLocation"
+      :isMrXVisible="shouldRevealMrX"
+      :mrXLocation="shouldRevealMrX && mrXRevealedLocation"
+    />
   </div>
 </template>
 
@@ -99,6 +105,19 @@ export default {
     },
     result: function() {
       return this.game && this.game.result;
+    },
+    shouldRevealMrX: function() {
+      const revealMoves = [3, 8, 13, 18, 24];
+      return revealMoves.some(
+        moveNumber => this.moves.length === moveNumber + 1
+      );
+    },
+    mrXRevealedLocation: function() {
+      const revealMoves = [3, 8, 13, 18, 24];
+      const currentRevealMove = revealMoves.find(
+        moveNumber => this.moves.length === moveNumber + 1
+      );
+      return this.moves[currentRevealMove].position;
     },
     currentPlayer: function() {
       if (!this.playerOnTurn) {
@@ -219,6 +238,7 @@ export default {
           position: currentLocation,
           ticket: ticketType,
         });
+
         this.currentPlayer.currentLocation = currentLocation;
         const isSecondMove = this.currentPlayer.secondMove;
         this.currentPlayer.secondMove = false;

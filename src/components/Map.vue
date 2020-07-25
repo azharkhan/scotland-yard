@@ -49,6 +49,8 @@ export default {
   props: {
     detectives: Array,
     currentPlayer: Object || null,
+    isMrXVisible: Boolean,
+    mrXLocation: Number || Boolean,
   },
   methods: {
     clearDetectiveMarkers: function() {
@@ -236,8 +238,7 @@ export default {
         }
       }
     },
-    checkIfMrXVisible() {
-      // check if user has access to Mr X
+    setCurrentPlayer() {
       const isMrXTurn = this.currentPlayer.role === "mr-x";
       const loggedInUserIsMrX =
         this.currentPlayer.user &&
@@ -245,8 +246,8 @@ export default {
         this.state.user.uid &&
         this.state.user.uid === this.currentPlayer.user;
 
-      // don't show Mr.X on the board if the logged-in player isn't controlling Mr. X
       if (isMrXTurn && !loggedInUserIsMrX) {
+        // we don't want to show other players Mr. X location
         return;
       }
       this.selectStation(this.currentPlayer.currentLocation.toString());
@@ -264,9 +265,7 @@ export default {
         this.clearAvailableRoutes();
 
         this.detectives.map(detective => {
-          const point = document.querySelector(
-            `[data-point="${detective.currentLocation.toString()}"]`
-          );
+          const point = this.$refs[detective.currentLocation][0];
           const attributes = {
             cx: point.getAttributeNS(null, "cx"),
             cy: point.getAttributeNS(null, "cy"),
@@ -276,15 +275,39 @@ export default {
         });
       },
     },
+    isMrXVisible: {
+      handler() {
+        const svg = document.getElementById("board");
+        if (this.isMrXVisible) {
+          // check if user has access to Mr X
+          const isMrXTurn =
+            this.currentPlayer && this.currentPlayer.role === "mr-x";
+
+          if (!isMrXTurn && this.isMrXVisible && this.mrXLocation) {
+            const mrXLocationStation = this.$refs[this.mrXLocation][0];
+            const attributes = {
+              cx: mrXLocationStation.getAttributeNS(null, "cx"),
+              cy: mrXLocationStation.getAttributeNS(null, "cy"),
+              className: `mr-x-location`,
+            };
+            this.addCircleToBoard(attributes);
+          }
+        } else {
+          document.querySelectorAll("circle.mr-x-location").forEach(node => {
+            svg.removeChild(node);
+          });
+        }
+      },
+    },
     state: {
       deep: true,
       handler() {
-        this.checkIfMrXVisible();
+        this.setCurrentPlayer();
       },
     },
     currentPlayer: {
       handler() {
-        this.checkIfMrXVisible();
+        this.setCurrentPlayer();
       },
     },
   },
@@ -363,5 +386,10 @@ export default {
 
 .detective-5 {
   stroke: gold;
+}
+.mr-x-location {
+  stroke: darkslategray;
+  stroke-width: 3;
+  fill: none;
 }
 </style>
