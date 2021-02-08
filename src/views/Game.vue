@@ -206,6 +206,10 @@ export default {
       });
     },
 
+    getDetectives: function () {
+        return this.detectives.filter( detective => detective.role != this.playerOnTurn );
+    },
+
     checkForGameEnd: function() {
       const mrXLocation = this.mrX.currentLocation;
       const isDetectiveOnSameLocation = this.detectives.find(
