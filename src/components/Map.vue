@@ -53,18 +53,18 @@ export default {
     mrXLocation: Number || Boolean,
   },
   methods: {
-    clearDetectiveMarkers: function() {
+    clearDetectiveMarkers: function () {
       const svg = document.getElementById("board");
-      document.querySelectorAll("circle.detective").forEach(node => {
+      document.querySelectorAll("circle.detective").forEach((node) => {
         svg.removeChild(node);
       });
     },
 
-    clearSelected: function() {
+    clearSelected: function () {
       // remove any existing selected stations
       this.stationCoords
-        .filter(station => station.selected)
-        .forEach(station => {
+        .filter((station) => station.selected)
+        .forEach((station) => {
           // clear animations
           const stationRef = this.$refs[station.number][0];
           gsap.killTweensOf(stationRef);
@@ -74,17 +74,17 @@ export default {
         });
     },
 
-    clearAvailableRoutes: function() {
+    clearAvailableRoutes: function () {
       // clean up currently available routes
       this.stationCoords
-        .filter(station => station.available)
-        .forEach(station => {
+        .filter((station) => station.available)
+        .forEach((station) => {
           station.available = false;
           station.type = false;
         });
     },
 
-    addCircleToBoard: function({
+    addCircleToBoard: function ({
       cx,
       cy,
       r = 15,
@@ -104,7 +104,7 @@ export default {
       svg.appendChild(circle);
     },
 
-    chooseTicketsAndValidate: async function(station) {
+    chooseTicketsAndValidate: async function (station) {
       // find all possible modes of transport
       const currentLocation = this.currentPlayer.currentLocation;
       const nearbyStations = this.stations[currentLocation];
@@ -115,7 +115,7 @@ export default {
       const accessibleTransports = allTransportTypes.reduce(
         (accessible, type) => {
           const found = stations[currentLocation][type].find(
-            stop => stop === station.number.toString()
+            (stop) => stop === station.number.toString()
           );
           if (found && this.currentPlayer.tickets[type] > 0) {
             accessible.push(type);
@@ -156,7 +156,7 @@ export default {
       });
     },
 
-    setCurrentPlayerLocation: async function(station) {
+    setCurrentPlayerLocation: async function (station) {
       let ticketType;
 
       if (
@@ -195,12 +195,12 @@ export default {
       }
     },
 
-    selectStation: function(stationNumber) {
+    selectStation: function (stationNumber) {
       // remove any existing selected stations
       this.clearSelected();
       // find the matching station and set to selected
       const matchingStation = this.stationCoords.find(
-        station => station.number === stationNumber
+        (station) => station.number === stationNumber
       );
 
       matchingStation.selected = true;
@@ -219,29 +219,29 @@ export default {
       this.showNearbyStations(matchingStation);
     },
 
-    showNearbyStations: function(selectedStation) {
+    showNearbyStations: function (selectedStation) {
       const stationNumber = selectedStation.number;
-      //get all detectives to check locations
-      const detectives = this.$parent.getDetectives();
       // clean up currently available routes
       this.clearAvailableRoutes();
       // get routes for given station
       const routes = this.stations[stationNumber];
+
+      const detectiveLocations = this.detectives.map((detective) =>
+        // convert toString since stationCoords are stored as strings
+        detective.currentLocation.toString()
+      );
+
       for (let routeType in routes) {
         if (this.currentPlayer.tickets[routeType] > 0) {
           let stops = routes[routeType];
-          stops.forEach(stop => {
+          stops.forEach((stop) => {
             const matchingStation = this.stationCoords.find(
-              station => station.number === stop
+              (station) => station.number === stop
             );
-            //check if stop is valid or occupied already
-            var stopValid = true;
-            detectives.forEach(detective => {
-              if( detective.currentLocation == stop) {
-                stopValid = false;
-              }
-            });
-            if( stopValid ) {
+
+            // two detectives cannot occupy the same space
+            // ref: https://github.com/azharkhan/scotland-yard/pull/13
+            if (!detectiveLocations.includes(matchingStation.number)) {
               matchingStation.available = true;
               matchingStation.type = routeType;
             }
@@ -275,7 +275,7 @@ export default {
         this.clearSelected();
         this.clearAvailableRoutes();
 
-        this.detectives.map(detective => {
+        this.detectives.map((detective) => {
           const point = this.$refs[detective.currentLocation][0];
           const attributes = {
             cx: point.getAttributeNS(null, "cx"),
@@ -304,7 +304,7 @@ export default {
             this.addCircleToBoard(attributes);
           }
         } else {
-          document.querySelectorAll("circle.mr-x-location").forEach(node => {
+          document.querySelectorAll("circle.mr-x-location").forEach((node) => {
             svg.removeChild(node);
           });
         }
