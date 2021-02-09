@@ -221,6 +221,8 @@ export default {
 
     showNearbyStations: function(selectedStation) {
       const stationNumber = selectedStation.number;
+      //get all detectives to check locations
+      const detectives = this.$parent.getDetectives();
       // clean up currently available routes
       this.clearAvailableRoutes();
       // get routes for given station
@@ -232,8 +234,17 @@ export default {
             const matchingStation = this.stationCoords.find(
               station => station.number === stop
             );
-            matchingStation.available = true;
-            matchingStation.type = routeType;
+            //check if stop is valid or occupied already
+            var stopValid = true;
+            detectives.forEach(detective => {
+              if( detective.currentLocation == stop) {
+                stopValid = false;
+              }
+            });
+            if( stopValid ) {
+              matchingStation.available = true;
+              matchingStation.type = routeType;
+            }
           });
         }
       }
