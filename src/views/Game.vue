@@ -1,6 +1,10 @@
 <template>
   <div class="game container">
-    <StatusBar :currentPlayer="currentPlayer" :round="roundNumber" :result="result" />
+    <StatusBar
+      :currentPlayer="currentPlayer"
+      :round="roundNumber"
+      :result="result"
+    />
     <b-button @click="chooseRoles">Choose Roles</b-button>
     <div class="mr-x">
       <Player
@@ -62,22 +66,19 @@ export default {
   },
   firestore() {
     return {
-      players: db
-        .collection("games")
-        .doc(this.gameId)
-        .collection("players"),
+      players: db.collection("games").doc(this.gameId).collection("players"),
       game: db.collection("games").doc(this.gameId),
     };
   },
   computed: {
-    isMrX: function() {
+    isMrX: function () {
       const userId = this.state.user && this.state.user.uid;
       return userId && this.mrX && this.mrX.user === userId;
     },
-    detectives: function() {
+    detectives: function () {
       return (
         this.players
-          .filter(player => player.role !== "mr-x")
+          .filter((player) => player.role !== "mr-x")
           // sort detectives by role
           .sort((playerA, playerB) => {
             if (playerA.role < playerB.role) return -1;
@@ -85,56 +86,56 @@ export default {
           })
       );
     },
-    roundNumber: function() {
+    roundNumber: function () {
       return this.game && this.game.round;
     },
-    mrX: function() {
-      return this.players.find(player => player.role === "mr-x");
+    mrX: function () {
+      return this.players.find((player) => player.role === "mr-x");
     },
-    moves: function() {
+    moves: function () {
       if (this.mrX) {
         return this.mrX.moves;
       }
       return [];
     },
-    playerOnTurn: function() {
+    playerOnTurn: function () {
       return this.game && this.game.playerOnTurn;
     },
-    isMisterXTurn: function() {
+    isMisterXTurn: function () {
       return this.playerOnTurn && this.playerOnTurn === "mr-x";
     },
-    result: function() {
+    result: function () {
       return this.game && this.game.result;
     },
-    shouldRevealMrX: function() {
+    shouldRevealMrX: function () {
       const revealMoves = [3, 8, 13, 18, 24];
       return revealMoves.some(
-        moveNumber => this.moves.length === moveNumber + 1
+        (moveNumber) => this.moves.length === moveNumber + 1
       );
     },
-    mrXRevealedLocation: function() {
+    mrXRevealedLocation: function () {
       const revealMoves = [3, 8, 13, 18, 24];
       const currentRevealMove = revealMoves.find(
-        moveNumber => this.moves.length === moveNumber + 1
+        (moveNumber) => this.moves.length === moveNumber + 1
       );
       return this.moves[currentRevealMove].position;
     },
-    currentPlayer: function() {
+    currentPlayer: function () {
       if (!this.playerOnTurn) {
         return null;
       }
       return (
         this.players.length &&
-        this.players.find(player => player.role === this.playerOnTurn)
+        this.players.find((player) => player.role === this.playerOnTurn)
       );
     },
   },
   methods: {
-    handleSetTurn: function(role) {
+    handleSetTurn: function (role) {
       this.$firestoreRefs.game.update({ playerOnTurn: role });
     },
 
-    chooseRoles: function() {
+    chooseRoles: function () {
       this.$buefy.modal.open({
         parent: this,
         component: this.chooseRole,
@@ -145,7 +146,7 @@ export default {
           mrXPlayer: this.mrXPlayer,
         },
         events: {
-          setRoles: value => {
+          setRoles: (value) => {
             if (value === "mr-x" && this.state.user) {
               this.$firestoreRefs.players
                 .doc(this.currentPlayer.id)
@@ -164,7 +165,7 @@ export default {
       });
     },
 
-    startNewRound: function() {
+    startNewRound: function () {
       if (this.roundNumber === 22) {
         this.endGame("Mr. X Wins!");
         return;
@@ -176,7 +177,7 @@ export default {
       });
     },
 
-    selectNextPlayer: function() {
+    selectNextPlayer: function () {
       // TODO: change this to proper selection
       let currentPlayerNumber;
 
@@ -197,7 +198,7 @@ export default {
       }
     },
 
-    endGame: function(result) {
+    endGame: function (result) {
       this.result = result;
 
       this.$firestoreRefs.game.update({
@@ -206,14 +207,10 @@ export default {
       });
     },
 
-    getDetectives: function () {
-        return this.detectives.filter( detective => detective.role != this.playerOnTurn );
-    },
-
-    checkForGameEnd: function() {
+    checkForGameEnd: function () {
       const mrXLocation = this.mrX.currentLocation;
       const isDetectiveOnSameLocation = this.detectives.find(
-        detective => detective.currentLocation === mrXLocation
+        (detective) => detective.currentLocation === mrXLocation
       );
 
       if (isDetectiveOnSameLocation) {
@@ -229,7 +226,7 @@ export default {
       };
     },
 
-    handleSetLocation: function({ stationNumber, ticketType }) {
+    handleSetLocation: function ({ stationNumber, ticketType }) {
       if (!stationNumber) {
         return;
       }
